@@ -1,6 +1,6 @@
 ﻿namespace DevHabit.Api.Entities;
 
-internal sealed class Habit
+public sealed class Habit
 {
     public string Id { get; set; }
 
@@ -29,35 +29,35 @@ internal sealed class Habit
     public DateTime? LastCompletedAtUtc { get; set; }
 }
 
-internal sealed class Milestone
+public sealed class Milestone
 {
     public int Target { get; set; }
 
     public int Current { get; set; }
 }
 
-internal enum HabitType
+public enum HabitType
 {
     None = 0,
     Binary = 1,
     Measurable = 2
 }
 
-internal enum HabitStatus
+public enum HabitStatus
 {
     None = 0,
     Ongoing = 1,
     Completed = 2
 }
 
-internal sealed class Frequency
+public sealed class Frequency
 {
     public FrequencyType Type { get; set; }
 
     public int TimesPerPeriod { get; set; }
 }
 
-internal enum FrequencyType
+public enum FrequencyType
 {
     None = 0,
     Daily = 1,
@@ -65,7 +65,7 @@ internal enum FrequencyType
     Monthly = 3
 }
 
-internal sealed class Target
+public sealed class Target
 {
     public int Value { get; set; }
 

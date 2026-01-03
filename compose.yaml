@@ -5,11 +5,16 @@
       context: .
       dockerfile: DevHabit.Api/Dockerfile
     ports:
-      - "5000:8080"
       - "5001:8081"
     environment:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://devhabit.aspire-dashboard:18889
       - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:8081
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/devhabit.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=devpassword
+    volumes:
+      - ${USERPROFILE}/.aspnet/https:/https:ro
 
   devhabit.postgres:
     image: postgres:17.2

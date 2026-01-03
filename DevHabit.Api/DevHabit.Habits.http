@@ -1,0 +1,86 @@
+@HostAddress = https://localhost:5001/habits
+
+###
+
+# Get a list of habits
+GET {{HostAddress}}
+Accept: application/json
+
+###
+
+# Get habit by ID
+GET {{HostAddress}}/h_019b8605-21ab-7b4a-aa47-74d92a436087
+Accept: application/json
+
+###
+
+# Create habit
+POST {{HostAddress}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "Daily coding 2",
+  "description": null,
+  "type": 2,
+  "frequency": {
+    "type": 1,
+    "timesPerPeriod": 1
+  },
+  "target": {
+    "value": 30,
+    "unit": "minutes"
+  }
+}
+
+###
+
+# Update habit
+PUT {{HostAddress}}/h_019b8605-21ab-7b4a-aa47-74d92a436087
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "Daily coding",
+  "description": "The new description of the habit",
+  "type": 2,
+  "frequency": {
+    "type": 1,
+    "timesPerPeriod": 1
+  },
+  "target": {
+    "value": 45,
+    "unit": "minutes"
+  },
+  "milestone": {
+    "target": 100
+  }
+}
+
+###
+
+# Partially update habit
+PATCH {{HostAddress}}/h_019b8605-21ab-7b4a-aa47-74d92a436087
+Accept: application/json
+Content-Type: application/json-patch+json
+
+[
+  {
+    "op": "replace",
+    "path": "/name",
+    "value": "Daily coding updated"
+  },
+  {
+    "op": "replace",
+    "path": "/description",
+    "value": "description updated"
+  }
+]
+
+###
+
+# Delete habit
+DELETE {{HostAddress}}/h_019b8629-a611-7b16-a158-cfcc50a936f5
+Accept: application/json
+
+###
