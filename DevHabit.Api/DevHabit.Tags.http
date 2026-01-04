@@ -1,0 +1,45 @@
+﻿@HostAddress = https://localhost:5001/tags
+
+###
+
+# Get a list of tags
+GET {{HostAddress}}
+Accept: application/json
+
+###
+
+# Get tag by ID
+GET {{HostAddress}}/t_019b8656-0745-77f2-a5b2-c3cbbdb38125
+Accept: application/json
+
+###
+
+# Create tag
+POST {{HostAddress}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "new tag",
+  "description": "new desc"
+}
+
+###
+
+# Update tag
+PUT {{HostAddress}}/t_019b8656-0745-77f2-a5b2-c3cbbdb38125
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "updated tag",
+  "description": "updated desc"
+}
+
+###
+
+# Delete tag
+DELETE {{HostAddress}}/t_019b8656-0745-77f2-a5b2-c3cbbdb38125
+Accept: application/json
+
+###
