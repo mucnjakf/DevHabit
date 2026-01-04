@@ -1,9 +1,11 @@
 ﻿@HostAddress = https://localhost:5001
 
-###
+### Upsert habit tags
 
-# Upsert habit tags
-PUT {{HostAddress}}/habits/h_019b8605-21ab-7b4a-aa47-74d92a436087/tags
+< {%
+    request.variables.set("habitId", "h_019b8605-21ab-7b4a-aa47-74d92a436087")
+%}
+PUT {{HostAddress}}/habits/{{habitId}}/tags
 Accept: application/json
 Content-Type: application/json
 
@@ -14,10 +16,13 @@ Content-Type: application/json
   ]
 }
 
-###
+### Remove habit tag
 
-# Remove habit tag
-DELETE {{HostAddress}}/habits/h_019b8605-21ab-7b4a-aa47-74d92a436087/tags/t_019b8670-9c8d-7e43-8a42-73fa3481867b
+< {%
+    request.variables.set("habitId", "h_019b8605-21ab-7b4a-aa47-74d92a436087")
+    request.variables.set("tagId", "h_019b8605-21ab-7b4a-aa47-74d92a436087")
+%}
+DELETE {{HostAddress}}/habits/{{habitId}}/tags/{{tagId}}
 Accept: application/json
 
 ###

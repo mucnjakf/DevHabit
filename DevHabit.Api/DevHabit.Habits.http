@@ -1,42 +1,52 @@
-@HostAddress = https://localhost:5001/habits
+@HostAddress = https://localhost:5001
 
-###
+### Get a list of habits
 
-# Get a list of habits
-GET {{HostAddress}}
+< {%
+    request.variables.set("q", "")
+    request.variables.set("type", "")
+    request.variables.set("status", "")
+%}
+GET {{HostAddress}}/habits
+    ?q={{q}}
+    &type={{type}}
+    &status={{status}}
 Accept: application/json
 
-###
+### Get habit by ID
 
-# Get habit by ID
-GET {{HostAddress}}/h_019b8605-21ab-7b4a-aa47-74d92a436087
+< {%
+    request.variables.set("id", "h_019b8605-21ab-7b4a-aa47-74d92a436087")
+%}
+GET {{HostAddress}}/habits/{{id}}
 Accept: application/json
 
-###
+### Create habit
 
-# Create habit
-POST {{HostAddress}}
+POST {{HostAddress}}/habits
 Accept: application/json
 Content-Type: application/json
 
 {
-  "name": "Daily coding 2",
+  "name": "type 1",
   "description": null,
-  "type": 2,
+  "type": 1,
   "frequency": {
     "type": 1,
     "timesPerPeriod": 1
   },
   "target": {
     "value": 30,
-    "unit": "minutes"
+    "unit": "sessions"
   }
 }
 
-###
+### Update habit
 
-# Update habit
-PUT {{HostAddress}}/h_019b8605-21ab-7b4a-aa47-74d92a436087
+< {%
+    request.variables.set("id", "h_019b8605-21ab-7b4a-aa47-74d92a436087")
+%}
+PUT {{HostAddress}}/habits/{{id}}
 Accept: application/json
 Content-Type: application/json
 
@@ -57,10 +67,12 @@ Content-Type: application/json
   }
 }
 
-###
+### Partially update habit
 
-# Partially update habit
-PATCH {{HostAddress}}/h_019b8605-21ab-7b4a-aa47-74d92a436087
+< {%
+    request.variables.set("id", "h_019b8605-21ab-7b4a-aa47-74d92a436087")
+%}
+PATCH {{HostAddress}}/habits/{{id}}
 Accept: application/json
 Content-Type: application/json-patch+json
 
@@ -77,10 +89,10 @@ Content-Type: application/json-patch+json
   }
 ]
 
-###
+### Delete habit
 
-# Delete habit
-DELETE {{HostAddress}}/h_019b8629-a611-7b16-a158-cfcc50a936f5
+< {%
+    request.variables.set("id", "h_019b8605-21ab-7b4a-aa47-74d92a436087")
+%}
+DELETE {{HostAddress}}/habits/{{id}}
 Accept: application/json
-
-###
