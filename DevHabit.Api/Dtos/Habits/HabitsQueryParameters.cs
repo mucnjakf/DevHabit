@@ -14,6 +14,8 @@ public sealed record HabitsQueryParameters
 
     public string? Sort { get; init; }
 
+    public string? Fields { get; init; }
+
     public int Page { get; init; } = 1;
 
     public int PageSize { get; set; } = 10;

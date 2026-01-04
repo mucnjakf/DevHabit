@@ -6,7 +6,8 @@
     request.variables.set("q", "")
     request.variables.set("type", "")
     request.variables.set("status", "")
-    request.variables.set("sort", "frequency.type")
+    request.variables.set("sort", "")
+    request.variables.set("fields", "")
     request.variables.set("page", "1")
     request.variables.set("pageSize", "10")
 %}
@@ -15,6 +16,7 @@ GET {{HostAddress}}/habits
     &type={{type}}
     &status={{status}}
     &sort={{sort}}
+    &fields={{fields}}
     &page={{page}}
     &pageSize={{pageSize}}
 Accept: application/json
@@ -23,8 +25,9 @@ Accept: application/json
 
 < {%
     request.variables.set("id", "h_019b8605-21ab-7b4a-aa47-74d92a436087")
+    request.variables.set("fields", "tags")
 %}
-GET {{HostAddress}}/habits/{{id}}
+GET {{HostAddress}}/habits/{{id}}?fields={{fields}}
 Accept: application/json
 
 ### Create habit
