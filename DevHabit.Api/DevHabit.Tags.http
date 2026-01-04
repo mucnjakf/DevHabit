@@ -20,8 +20,8 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "name": "new tag",
-  "description": "new desc"
+  "name": "asdads",
+  "description": "new desc 2"
 }
 
 ###

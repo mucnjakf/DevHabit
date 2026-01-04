@@ -1,0 +1,23 @@
+﻿@HostAddress = https://localhost:5001
+
+###
+
+# Upsert habit tags
+PUT {{HostAddress}}/habits/h_019b8605-21ab-7b4a-aa47-74d92a436087/tags
+Accept: application/json
+Content-Type: application/json
+
+{
+  "tagIds": [
+    "t_019b8658-2e4b-73cd-8702-9ef2d6428cfa",
+    "t_019b8670-9c8d-7e43-8a42-73fa3481867b"
+  ]
+}
+
+###
+
+# Remove habit tag
+DELETE {{HostAddress}}/habits/h_019b8605-21ab-7b4a-aa47-74d92a436087/tags/t_019b8670-9c8d-7e43-8a42-73fa3481867b
+Accept: application/json
+
+###
