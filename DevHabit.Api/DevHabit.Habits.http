@@ -1,18 +1,22 @@
 @HostAddress = https://localhost:5001
 
-### Get a list of habits
+### Get paginated habits
 
 < {%
     request.variables.set("q", "")
     request.variables.set("type", "")
     request.variables.set("status", "")
     request.variables.set("sort", "frequency.type")
+    request.variables.set("page", "1")
+    request.variables.set("pageSize", "10")
 %}
 GET {{HostAddress}}/habits
     ?q={{q}}
     &type={{type}}
     &status={{status}}
     &sort={{sort}}
+    &page={{page}}
+    &pageSize={{pageSize}}
 Accept: application/json
 
 ### Get habit by ID
