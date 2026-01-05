@@ -18,8 +18,3 @@ public sealed record UpdateHabitDto
 
     public UpdateMilestoneDto? Milestone { get; init; }
 }
-
-public sealed record UpdateMilestoneDto
-{
-    public required int Target { get; init; }
-}
