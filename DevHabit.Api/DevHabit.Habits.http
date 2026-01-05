@@ -26,10 +26,11 @@ Accept: application/vnd.dev-habit.hateoas+json
 
 < {%
     request.variables.set("id", "h_019b8605-21ab-7b4a-aa47-74d92a436087")
-    request.variables.set("fields", "name")
+    request.variables.set("fields", "")
 %}
 GET {{HostAddress}}/habits/{{id}}?fields={{fields}}
-Accept: application/json
+Accept: application/vnd.dev-habit.hateoas+json
+# Accept: application/json
 
 ### Create habit
 
