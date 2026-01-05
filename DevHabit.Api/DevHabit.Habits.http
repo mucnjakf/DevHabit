@@ -7,9 +7,9 @@
     request.variables.set("type", "")
     request.variables.set("status", "")
     request.variables.set("sort", "")
-    request.variables.set("fields", "")
-    request.variables.set("page", "1")
-    request.variables.set("pageSize", "10")
+    request.variables.set("fields", "name,status")
+    request.variables.set("page", "3")
+    request.variables.set("pageSize", "1")
 %}
 GET {{HostAddress}}/habits
     ?q={{q}}
@@ -25,7 +25,7 @@ Accept: application/json
 
 < {%
     request.variables.set("id", "h_019b8605-21ab-7b4a-aa47-74d92a436087")
-    request.variables.set("fields", "tags")
+    request.variables.set("fields", "name")
 %}
 GET {{HostAddress}}/habits/{{id}}?fields={{fields}}
 Accept: application/json
@@ -37,9 +37,9 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "name": "type 1",
+  "name": "type 2",
   "description": null,
-  "type": 1,
+  "type": 2,
   "frequency": {
     "type": 1,
     "timesPerPeriod": 1
