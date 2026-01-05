@@ -1,6 +1,7 @@
 ﻿namespace DevHabit.Api.Database;
 
-internal static class Schemas
+public static class Schemas
 {
-    internal const string Application = "dev_habit";
+    public const string Application = "dev_habit";
+    public const string Identity = "identity";
 }

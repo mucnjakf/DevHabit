@@ -9,13 +9,19 @@ internal static class DatabaseExtensions
     {
         using IServiceScope scope = app.Services.CreateScope();
 
-        await using ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        await using ApplicationDbContext applicationDbContext = scope.ServiceProvider
+            .GetRequiredService<ApplicationDbContext>();
+
+        await using ApplicationIdentityDbContext applicationIdentityDbContext = scope.ServiceProvider
+            .GetRequiredService<ApplicationIdentityDbContext>();
 
         try
         {
-            await dbContext.Database.MigrateAsync();
+            await applicationDbContext.Database.MigrateAsync();
+            app.Logger.LogInformation("Application database migrations applied successfully");
 
-            app.Logger.LogInformation("Database migrations applied successfully");
+            await applicationIdentityDbContext.Database.MigrateAsync();
+            app.Logger.LogInformation("Identity database migrations applied successfully");
         }
         catch (Exception e)
         {
