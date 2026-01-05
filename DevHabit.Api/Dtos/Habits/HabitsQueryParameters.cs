@@ -5,6 +5,9 @@ namespace DevHabit.Api.Dtos.Habits;
 
 public sealed record HabitsQueryParameters
 {
+    [FromHeader(Name = "Accept")]
+    public string? Accept { get; init; }
+
     [FromQuery(Name = "q")]
     public string? Search { get; set; }
 
