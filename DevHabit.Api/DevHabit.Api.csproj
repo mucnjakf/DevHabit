@@ -2,12 +2,14 @@
 
     <PropertyGroup>
       <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+      <UserSecretsId>1a71b489-f07a-4065-890e-4ab1daaa6f2a</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Asp.Versioning.Mvc" />
         <PackageReference Include="EFCore.NamingConventions" />
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
         <PackageReference Include="Microsoft.AspNetCore.JsonPatch" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" />

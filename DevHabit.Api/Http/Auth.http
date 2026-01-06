@@ -1,8 +1,6 @@
-﻿@HostAddress = https://localhost:5001
+﻿### Register user
 
-### Register user
-
-POST {{HostAddress}}/auth/register
+POST {{hostAddress}}/auth/register
 Accept: application/json
 Content-Type: application/json
 
@@ -11,6 +9,17 @@ Content-Type: application/json
   "name": "Filip M",
   "password": "filipM123!",
   "confirmPassword": "filipM123!"
+}
+
+### Login user
+
+POST {{hostAddress}}/auth/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "filip@devhabit.com",
+  "password": "filipM123!"
 }
 
 ###

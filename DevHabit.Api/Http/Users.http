@@ -1,11 +1,10 @@
-﻿@HostAddress = https://localhost:5001
-
-### Get user
+﻿### Get user
 
 < {%
     request.variables.set("id", "u_019b8efc-dad3-7eff-a395-ca39d9d330f1")
 %}
-GET {{HostAddress}}/users/{{id}}
+GET {{hostAddress}}/users/{{id}}
 Accept: application/json
+Authorization: Bearer {{accessToken}}
 
 ###
