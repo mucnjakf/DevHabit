@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using DevHabit.Api.Database;
 using DevHabit.Api.Dtos.Users;
+using DevHabit.Api.Entities;
 using DevHabit.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +11,11 @@ namespace DevHabit.Api.Controllers;
 
 [ApiController]
 [Route("users")]
-[Authorize]
+[Authorize(Roles = Roles.Member)]
 public sealed class UsersController(ApplicationDbContext dbContext, UserContext userContext) : ControllerBase
 {
     [HttpGet("{id}")]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<ActionResult<UserDto>> GetUserById(string id)
     {
         string? userId = await userContext.GetUserIdAsync();

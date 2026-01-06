@@ -24,7 +24,8 @@ public sealed class TokenProvider(IOptions<JwtAuthOptions> jwtAuthOptions)
         List<Claim> claims =
         [
             new(JwtRegisteredClaimNames.Sub, getTokenDto.UserId),
-            new(JwtRegisteredClaimNames.Email, getTokenDto.Email)
+            new(JwtRegisteredClaimNames.Email, getTokenDto.Email),
+            ..getTokenDto.Roles.Select(x => new Claim(ClaimTypes.Role, x))
         ];
 
         var securityTokenDescriptor = new SecurityTokenDescriptor
