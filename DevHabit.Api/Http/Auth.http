@@ -5,7 +5,7 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "email": "filip@devhabit.com",
+  "email": "filip1@devhabit.com",
   "name": "Filip M",
   "password": "filipM123!",
   "confirmPassword": "filipM123!"
@@ -18,7 +18,7 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "email": "filip@devhabit.com",
+  "email": "filip1@devhabit.com",
   "password": "filipM123!"
 }
 

@@ -1,7 +1,7 @@
 ﻿### Upsert habit tags
 
 < {%
-    request.variables.set("habitId", "h_019b8605-21ab-7b4a-aa47-74d92a436087")
+    request.variables.set("habitId", "h_019b95a1-dca5-77ab-8397-af00c432ebd6")
 %}
 PUT {{hostAddress}}/habits/{{habitId}}/tags
 Accept: application/json
@@ -10,8 +10,7 @@ Authorization: Bearer {{accessToken}}
 
 {
   "tagIds": [
-    "t_019b8658-2e4b-73cd-8702-9ef2d6428cfa",
-    "t_019b8670-9c8d-7e43-8a42-73fa3481867b"
+    "t_019b95a2-9154-75e6-b651-81855c4f8116"
   ]
 }
 

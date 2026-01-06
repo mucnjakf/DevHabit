@@ -1,9 +1,15 @@
 ﻿### Get user
 
 < {%
-    request.variables.set("id", "u_019b8efc-dad3-7eff-a395-ca39d9d330f1")
+    request.variables.set("id", "u_019b9588-9816-7ca9-ac93-0cb1e1dc10d2")
 %}
 GET {{hostAddress}}/users/{{id}}
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+### Get current user
+
+GET {{hostAddress}}/users/me
 Accept: application/json
 Authorization: Bearer {{accessToken}}
 
