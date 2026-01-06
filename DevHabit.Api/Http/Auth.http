@@ -22,4 +22,14 @@ Content-Type: application/json
   "password": "filipM123!"
 }
 
+### Refresh token
+
+POST {{hostAddress}}/auth/refresh
+Accept: application/json
+Content-Type: application/json
+
+{
+  "value": "75M9acXMh2dJrwTQbbyoDJITcufyFJH5jZbZvCOQlhQ="
+}
+
 ###
