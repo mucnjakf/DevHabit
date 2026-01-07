@@ -6,7 +6,7 @@ Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 {
-  "accessToken": "",
+  "accessToken": "addtoken",
   "expiresInDays": 90
 }
 
