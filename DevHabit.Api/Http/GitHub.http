@@ -1,0 +1,23 @@
+﻿### Store PAT
+
+PUT {{hostAddress}}/github/personal-access-token
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "accessToken": "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",
+  "expiresInDays": 90
+}
+
+### Revoke PAT
+
+DELETE {{hostAddress}}/github/personal-access-token
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+### Get profile
+
+GET {{hostAddress}}/github/profile
+Accept: application/json
+Authorization: Bearer {{accessToken}}

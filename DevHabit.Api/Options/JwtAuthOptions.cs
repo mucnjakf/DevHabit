@@ -4,13 +4,13 @@ public sealed class JwtAuthOptions
 {
     public const string Section = "JwtAuth";
 
-    public string Issuer { get; init; }
+    public required string Issuer { get; init; }
 
-    public string Audience { get; init; }
+    public required string Audience { get; init; }
 
-    public string Key { get; init; }
+    public required string Key { get; init; }
 
-    public int ExpirationInMinutes { get; init; }
+    public required int ExpirationInMinutes { get; init; }
 
-    public int RefreshTokenExpirationInDays { get; init; }
+    public required int RefreshTokenExpirationInDays { get; init; }
 }
