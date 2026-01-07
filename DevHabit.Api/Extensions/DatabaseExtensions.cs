@@ -7,55 +7,58 @@ namespace DevHabit.Api.Extensions;
 
 public static class DatabaseExtensions
 {
-    public static async Task ApplyMigrationsAsync(this WebApplication app)
+    extension(WebApplication app)
     {
-        using IServiceScope scope = app.Services.CreateScope();
-
-        await using ApplicationDbContext applicationDbContext = scope.ServiceProvider
-            .GetRequiredService<ApplicationDbContext>();
-
-        await using ApplicationIdentityDbContext applicationIdentityDbContext = scope.ServiceProvider
-            .GetRequiredService<ApplicationIdentityDbContext>();
-
-        try
+        public async Task ApplyMigrationsAsync()
         {
-            await applicationDbContext.Database.MigrateAsync();
-            app.Logger.LogInformation("Application database migrations applied successfully");
+            using IServiceScope scope = app.Services.CreateScope();
 
-            await applicationIdentityDbContext.Database.MigrateAsync();
-            app.Logger.LogInformation("Identity database migrations applied successfully");
-        }
-        catch (Exception e)
-        {
-            app.Logger.LogError(e, "An error while applying database migrations");
-            throw;
-        }
-    }
+            await using ApplicationDbContext applicationDbContext = scope.ServiceProvider
+                .GetRequiredService<ApplicationDbContext>();
 
-    public static async Task SeedInitialDataAsync(this WebApplication app)
-    {
-        using IServiceScope scope = app.Services.CreateScope();
+            await using ApplicationIdentityDbContext applicationIdentityDbContext = scope.ServiceProvider
+                .GetRequiredService<ApplicationIdentityDbContext>();
 
-        RoleManager<IdentityRole>? roleManager = scope.ServiceProvider
-            .GetRequiredService<RoleManager<IdentityRole>>();
-
-        try
-        {
-            if (!await roleManager.RoleExistsAsync(Roles.Admin))
+            try
             {
-                await roleManager.CreateAsync(new IdentityRole(Roles.Admin));
-            }
+                await applicationDbContext.Database.MigrateAsync();
+                app.Logger.LogInformation("Application database migrations applied successfully");
 
-            if (!await roleManager.RoleExistsAsync(Roles.Member))
+                await applicationIdentityDbContext.Database.MigrateAsync();
+                app.Logger.LogInformation("Identity database migrations applied successfully");
+            }
+            catch (Exception e)
             {
-                await roleManager.CreateAsync(new IdentityRole(Roles.Member));
+                app.Logger.LogError(e, "An error while applying database migrations");
+                throw;
             }
-
-            app.Logger.LogInformation("Seeding initial data finished successfully");
         }
-        catch (Exception e)
+
+        public async Task SeedInitialDataAsync()
         {
-            app.Logger.LogError(e, "An error occurred while seeding initial data");
+            using IServiceScope scope = app.Services.CreateScope();
+
+            RoleManager<IdentityRole>? roleManager = scope.ServiceProvider
+                .GetRequiredService<RoleManager<IdentityRole>>();
+
+            try
+            {
+                if (!await roleManager.RoleExistsAsync(Roles.Admin))
+                {
+                    await roleManager.CreateAsync(new IdentityRole(Roles.Admin));
+                }
+
+                if (!await roleManager.RoleExistsAsync(Roles.Member))
+                {
+                    await roleManager.CreateAsync(new IdentityRole(Roles.Member));
+                }
+
+                app.Logger.LogInformation("Seeding initial data finished successfully");
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e, "An error occurred while seeding initial data");
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using DevHabit.Api.Database;
+﻿using Asp.Versioning;
+using DevHabit.Api.Database;
 using DevHabit.Api.Dtos.Auth;
 using DevHabit.Api.Dtos.Users;
 using DevHabit.Api.Entities;
@@ -15,6 +16,7 @@ namespace DevHabit.Api.Controllers;
 
 [ApiController]
 [Route("auth")]
+[ApiVersion(1.0)]
 [AllowAnonymous]
 public sealed class AuthController(
     UserManager<IdentityUser> userManager,

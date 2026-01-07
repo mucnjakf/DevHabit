@@ -1,4 +1,5 @@
-﻿using DevHabit.Api.Database;
+﻿using Asp.Versioning;
+using DevHabit.Api.Database;
 using DevHabit.Api.Dtos.HabitTags;
 using DevHabit.Api.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -9,6 +10,7 @@ namespace DevHabit.Api.Controllers;
 
 [ApiController]
 [Route("habits/{habitId}/tags")]
+[ApiVersion(1.0)]
 [Authorize(Roles = Roles.Member)]
 public sealed class HabitTagsController(ApplicationDbContext dbContext) : ControllerBase
 {

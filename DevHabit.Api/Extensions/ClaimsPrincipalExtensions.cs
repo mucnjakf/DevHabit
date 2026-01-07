@@ -4,6 +4,9 @@ namespace DevHabit.Api.Extensions;
 
 public static class ClaimsPrincipalExtensions
 {
-    public static string? GetIdentityId(this ClaimsPrincipal? claimsPrincipal)
-        => claimsPrincipal?.FindFirstValue(ClaimTypes.NameIdentifier);
+    extension(ClaimsPrincipal? claimsPrincipal)
+    {
+        public string? GetIdentityId()
+            => claimsPrincipal?.FindFirstValue(ClaimTypes.NameIdentifier);
+    }
 }

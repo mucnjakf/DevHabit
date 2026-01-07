@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+﻿using Asp.Versioning;
 using DevHabit.Api.Database;
 using DevHabit.Api.Dtos.Users;
 using DevHabit.Api.Entities;
@@ -11,6 +11,7 @@ namespace DevHabit.Api.Controllers;
 
 [ApiController]
 [Route("users")]
+[ApiVersion(1.0)]
 [Authorize(Roles = Roles.Member)]
 public sealed class UsersController(ApplicationDbContext dbContext, UserContext userContext) : ControllerBase
 {
@@ -32,7 +33,7 @@ public sealed class UsersController(ApplicationDbContext dbContext, UserContext 
 
         UserDto? user = await dbContext.Users
             .Where(x => x.Id == id)
-            .Select(UserQueries.ProjectToDto())
+            .Select(UserProjections.ProjectToDto())
             .FirstOrDefaultAsync();
 
         if (user is null)
@@ -55,7 +56,7 @@ public sealed class UsersController(ApplicationDbContext dbContext, UserContext 
 
         UserDto? user = await dbContext.Users
             .Where(x => x.Id == userId)
-            .Select(UserQueries.ProjectToDto())
+            .Select(UserProjections.ProjectToDto())
             .FirstOrDefaultAsync();
 
         if (user is null)

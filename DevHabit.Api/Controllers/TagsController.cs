@@ -1,4 +1,5 @@
 ﻿using System.Net.Mime;
+using Asp.Versioning;
 using DevHabit.Api.Database;
 using DevHabit.Api.Dtos.Common;
 using DevHabit.Api.Dtos.Tags;
@@ -16,6 +17,7 @@ namespace DevHabit.Api.Controllers;
 [ApiController]
 [Route("tags")]
 [Authorize(Roles = Roles.Member)]
+[ApiVersion(1.0)]
 [Produces(
     MediaTypeNames.Application.Json,
     VendorMediaTypeNames.Application.JsonV1,
@@ -24,8 +26,7 @@ namespace DevHabit.Api.Controllers;
 public sealed class TagsController(
     ApplicationDbContext dbContext,
     LinkService linkService,
-    UserContext userContext)
-    : ControllerBase
+    UserContext userContext) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<TagsCollectionDto>> GetTags([FromHeader] string? accept)
@@ -39,7 +40,7 @@ public sealed class TagsController(
 
         List<TagDto> tags = await dbContext.Tags
             .Where(x => x.UserId == userId)
-            .Select(TagQueries.ProjectToDto())
+            .Select(TagProjections.ProjectToDto())
             .ToListAsync();
 
         var habitsCollectionDto = new TagsCollectionDto
@@ -67,7 +68,7 @@ public sealed class TagsController(
 
         TagDto? tag = await dbContext.Tags
             .Where(x => x.Id == id && x.UserId == userId)
-            .Select(TagQueries.ProjectToDto())
+            .Select(TagProjections.ProjectToDto())
             .FirstOrDefaultAsync();
 
         if (tag is null)

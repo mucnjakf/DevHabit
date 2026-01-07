@@ -71,7 +71,7 @@ public sealed class HabitsController(
             .Where(x => parameters.Type == null || x.Type == parameters.Type)
             .Where(x => parameters.Status == null || x.Status == parameters.Status)
             .ApplySort(parameters.Sort, sortMappings)
-            .Select(HabitQueries.ProjectToDto());
+            .Select(HabitProjections.ProjectToDto());
 
         int totalCount = await query.CountAsync();
 
@@ -128,7 +128,7 @@ public sealed class HabitsController(
 
         HabitWithTagsDto? habit = await dbContext.Habits
             .Where(x => x.Id == id && x.UserId == userId)
-            .Select(HabitQueries.ProjectToDtoWithTags())
+            .Select(HabitProjections.ProjectToDtoWithTags())
             .FirstOrDefaultAsync();
 
         if (habit is null)
@@ -172,7 +172,7 @@ public sealed class HabitsController(
 
         HabitWithTagsDtoV2? habit = await dbContext.Habits
             .Where(x => x.Id == id && x.UserId == userId)
-            .Select(HabitQueries.ProjectToDtoWithTagsV2())
+            .Select(HabitProjections.ProjectToDtoWithTagsV2())
             .FirstOrDefaultAsync();
 
         if (habit is null)

@@ -1,4 +1,5 @@
-﻿using DevHabit.Api.Dtos.GitHub;
+﻿using Asp.Versioning;
+using DevHabit.Api.Dtos.GitHub;
 using DevHabit.Api.Entities;
 using DevHabit.Api.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -8,6 +9,7 @@ namespace DevHabit.Api.Controllers;
 
 [ApiController]
 [Route("github")]
+[ApiVersion(1.0)]
 [Authorize(Roles = Roles.Member)]
 public sealed class GitHubController(
     GitHubAccessTokenService gitHubAccessTokenService,

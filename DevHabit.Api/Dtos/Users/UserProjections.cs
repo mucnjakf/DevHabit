@@ -3,7 +3,7 @@ using DevHabit.Api.Entities;
 
 namespace DevHabit.Api.Dtos.Users;
 
-public static class UserQueries
+public static class UserProjections
 {
     public static Expression<Func<User, UserDto>> ProjectToDto()
     {

@@ -1,6 +1,5 @@
 ﻿using System.Security.Cryptography;
 using DevHabit.Api.Options;
-using Microsoft.AspNetCore.DataProtection.XmlEncryption;
 using Microsoft.Extensions.Options;
 
 namespace DevHabit.Api.Services;

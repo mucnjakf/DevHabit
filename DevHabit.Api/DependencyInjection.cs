@@ -27,183 +27,185 @@ namespace DevHabit.Api;
 
 public static class DependencyInjection
 {
-    public static WebApplicationBuilder AddApiServices(this WebApplicationBuilder builder)
+    extension(WebApplicationBuilder builder)
     {
-        builder.Services.AddControllers(options =>
-            {
-                options.RespectBrowserAcceptHeader = true;
-                options.ReturnHttpNotAcceptable = true;
-            })
-            .AddNewtonsoftJson(options =>
-                options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver())
-            .AddXmlSerializerFormatters();
-
-        builder.Services.Configure<MvcOptions>(options =>
+        public WebApplicationBuilder AddApiServices()
         {
-            NewtonsoftJsonOutputFormatter formatter = options.OutputFormatters
-                .OfType<NewtonsoftJsonOutputFormatter>()
-                .First();
+            builder.Services.AddControllers(options =>
+                {
+                    options.RespectBrowserAcceptHeader = true;
+                    options.ReturnHttpNotAcceptable = true;
+                })
+                .AddNewtonsoftJson(options =>
+                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver())
+                .AddXmlSerializerFormatters();
 
-            formatter.SupportedMediaTypes.Add(VendorMediaTypeNames.Application.JsonV1);
-            formatter.SupportedMediaTypes.Add(VendorMediaTypeNames.Application.JsonV2);
-            formatter.SupportedMediaTypes.Add(VendorMediaTypeNames.Application.HateoasJson);
-            formatter.SupportedMediaTypes.Add(VendorMediaTypeNames.Application.HateoasJsonV1);
-            formatter.SupportedMediaTypes.Add(VendorMediaTypeNames.Application.HateoasJsonV2);
-        });
-
-        builder.Services
-            .AddApiVersioning(options =>
+            builder.Services.Configure<MvcOptions>(options =>
             {
-                options.DefaultApiVersion = new ApiVersion(1.0);
-                options.AssumeDefaultVersionWhenUnspecified = true;
-                options.ReportApiVersions = true;
-                options.ApiVersionSelector = new DefaultApiVersionSelector(options);
+                NewtonsoftJsonOutputFormatter formatter = options.OutputFormatters
+                    .OfType<NewtonsoftJsonOutputFormatter>()
+                    .First();
 
-                options.ApiVersionReader = ApiVersionReader.Combine(
-                    new MediaTypeApiVersionReader(),
-                    new MediaTypeApiVersionReaderBuilder()
-                        .Template("application/vnd.dev-habit.hateoas.{version}+json")
-                        .Build());
-            })
-            .AddMvc();
-
-        builder.Services.AddOpenApi();
-
-        return builder;
-    }
-
-    public static WebApplicationBuilder AddErrorHandling(this WebApplicationBuilder builder)
-    {
-        builder.Services.AddProblemDetails(options =>
-        {
-            options.CustomizeProblemDetails = context =>
-            {
-                context.ProblemDetails.Extensions.TryAdd("requestId", context.HttpContext.TraceIdentifier);
-            };
-        });
-
-        builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
-        builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-
-        return builder;
-    }
-
-    public static WebApplicationBuilder AddDatabase(this WebApplicationBuilder builder)
-    {
-        builder.Services.AddDbContext<ApplicationDbContext>(options => options
-            .UseNpgsql(
-                builder.Configuration.GetConnectionString("Default"),
-                npgsqlOptions => npgsqlOptions
-                    .MigrationsHistoryTable(HistoryRepository.DefaultTableName, Schemas.Application))
-            .UseSnakeCaseNamingConvention());
-
-        builder.Services.AddDbContext<ApplicationIdentityDbContext>(options => options
-            .UseNpgsql(
-                builder.Configuration.GetConnectionString("Default"),
-                npgsqlOptions => npgsqlOptions
-                    .MigrationsHistoryTable(HistoryRepository.DefaultTableName, Schemas.Identity))
-            .UseSnakeCaseNamingConvention());
-
-        return builder;
-    }
-
-    public static WebApplicationBuilder AddObservability(this WebApplicationBuilder builder)
-    {
-        builder.Services.AddOpenTelemetry()
-            .ConfigureResource(resource => resource
-                .AddService(builder.Environment.ApplicationName))
-            .WithTracing(tracing => tracing
-                .AddHttpClientInstrumentation()
-                .AddAspNetCoreInstrumentation()
-                .AddNpgsql())
-            .WithMetrics(metrics => metrics
-                .AddHttpClientInstrumentation()
-                .AddAspNetCoreInstrumentation()
-                .AddRuntimeInstrumentation())
-            .UseOtlpExporter();
-
-        builder.Logging.AddOpenTelemetry(options =>
-        {
-            options.IncludeScopes = true;
-            options.IncludeFormattedMessage = true;
-        });
-
-        return builder;
-    }
-
-    public static WebApplicationBuilder AddApplicationServices(this WebApplicationBuilder builder)
-    {
-        builder.Services.AddValidatorsFromAssemblyContaining<Program>();
-
-        builder.Services.AddTransient<SortMappingProvider>();
-
-        builder.Services.AddSingleton<ISortMappingDefinition, SortMappingDefinition<HabitDto, Habit>>(_ =>
-            HabitMappings.SortMapping);
-
-        builder.Services.AddTransient<DataShapingService>();
-
-        builder.Services.AddHttpContextAccessor();
-
-        builder.Services.AddTransient<LinkService>();
-
-        builder.Services.AddTransient<TokenProvider>();
-
-        builder.Services.AddMemoryCache();
-
-        builder.Services.AddScoped<UserContext>();
-
-        builder.Services.AddScoped<GitHubAccessTokenService>();
-
-        builder.Services.AddTransient<GitHubService>();
-
-        builder.Services
-            .AddHttpClient("github")
-            .ConfigureHttpClient(httpClient =>
-            {
-                httpClient.BaseAddress = new Uri("https://api.github.com");
-
-                httpClient.DefaultRequestHeaders.UserAgent
-                    .Add(new ProductInfoHeaderValue("DevHabit", "1.0"));
-
-                httpClient.DefaultRequestHeaders.Accept
-                    .Add(new MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
+                formatter.SupportedMediaTypes.Add(VendorMediaTypeNames.Application.JsonV1);
+                formatter.SupportedMediaTypes.Add(VendorMediaTypeNames.Application.JsonV2);
+                formatter.SupportedMediaTypes.Add(VendorMediaTypeNames.Application.HateoasJson);
+                formatter.SupportedMediaTypes.Add(VendorMediaTypeNames.Application.HateoasJsonV1);
+                formatter.SupportedMediaTypes.Add(VendorMediaTypeNames.Application.HateoasJsonV2);
             });
 
-        builder.Services.Configure<EncryptionOptions>(builder.Configuration.GetSection(EncryptionOptions.Section));
-        
-        builder.Services.AddTransient<EncryptionService>();
+            builder.Services.AddApiVersioning(options =>
+                {
+                    options.DefaultApiVersion = new ApiVersion(1.0);
+                    options.AssumeDefaultVersionWhenUnspecified = true;
+                    options.ReportApiVersions = true;
+                    options.ApiVersionSelector = new DefaultApiVersionSelector(options);
 
-        return builder;
-    }
+                    options.ApiVersionReader = ApiVersionReader.Combine(
+                        new MediaTypeApiVersionReader(),
+                        new MediaTypeApiVersionReaderBuilder()
+                            .Template("application/vnd.dev-habit.hateoas.{version}+json")
+                            .Build());
+                })
+                .AddMvc();
 
-    public static WebApplicationBuilder AddAuthenticationServices(this WebApplicationBuilder builder)
-    {
-        builder.Services
-            .AddIdentity<IdentityUser, IdentityRole>()
-            .AddEntityFrameworkStores<ApplicationIdentityDbContext>();
+            builder.Services.AddOpenApi();
 
-        builder.Services.Configure<JwtAuthOptions>(builder.Configuration.GetSection(JwtAuthOptions.Section));
+            return builder;
+        }
 
-        JwtAuthOptions jwtAuthOptions = builder.Configuration
-            .GetSection(JwtAuthOptions.Section)
-            .Get<JwtAuthOptions>()!;
-
-        builder.Services.AddAuthentication(options =>
+        public WebApplicationBuilder AddErrorHandling()
         {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        }).AddJwtBearer(options =>
-        {
-            options.TokenValidationParameters = new TokenValidationParameters
+            builder.Services.AddProblemDetails(options =>
             {
-                ValidIssuer = jwtAuthOptions.Issuer,
-                ValidAudience = jwtAuthOptions.Audience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtAuthOptions.Key)),
-            };
-        });
+                options.CustomizeProblemDetails = context =>
+                {
+                    context.ProblemDetails.Extensions.TryAdd("requestId", context.HttpContext.TraceIdentifier);
+                };
+            });
 
-        builder.Services.AddAuthorization();
+            builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
+            builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
-        return builder;
+            return builder;
+        }
+
+        public WebApplicationBuilder AddDatabase()
+        {
+            builder.Services.AddDbContext<ApplicationDbContext>(options => options
+                .UseNpgsql(
+                    builder.Configuration.GetConnectionString("Default"),
+                    npgsqlOptions =>
+                        npgsqlOptions.MigrationsHistoryTable(HistoryRepository.DefaultTableName, Schemas.Application))
+                .UseSnakeCaseNamingConvention());
+
+            builder.Services.AddDbContext<ApplicationIdentityDbContext>(options => options
+                .UseNpgsql(
+                    builder.Configuration.GetConnectionString("Default"),
+                    npgsqlOptions => npgsqlOptions
+                        .MigrationsHistoryTable(HistoryRepository.DefaultTableName, Schemas.Identity))
+                .UseSnakeCaseNamingConvention());
+
+            return builder;
+        }
+
+        public WebApplicationBuilder AddObservability()
+        {
+            builder.Services.AddOpenTelemetry()
+                .ConfigureResource(resource => resource
+                    .AddService(builder.Environment.ApplicationName))
+                .WithTracing(tracing => tracing
+                    .AddHttpClientInstrumentation()
+                    .AddAspNetCoreInstrumentation()
+                    .AddNpgsql())
+                .WithMetrics(metrics => metrics
+                    .AddHttpClientInstrumentation()
+                    .AddAspNetCoreInstrumentation()
+                    .AddRuntimeInstrumentation())
+                .UseOtlpExporter();
+
+            builder.Logging.AddOpenTelemetry(options =>
+            {
+                options.IncludeScopes = true;
+                options.IncludeFormattedMessage = true;
+            });
+
+            return builder;
+        }
+
+        public WebApplicationBuilder AddApplicationServices()
+        {
+            builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+
+            builder.Services.AddTransient<SortMappingProvider>();
+
+            builder.Services.AddSingleton<ISortMappingDefinition, SortMappingDefinition<HabitDto, Habit>>(_ =>
+                HabitMappings.SortMapping);
+
+            builder.Services.AddTransient<DataShapingService>();
+
+            builder.Services.AddHttpContextAccessor();
+
+            builder.Services.AddTransient<LinkService>();
+
+            builder.Services.AddTransient<TokenProvider>();
+
+            builder.Services.AddMemoryCache();
+
+            builder.Services.AddScoped<UserContext>();
+
+            builder.Services.AddScoped<GitHubAccessTokenService>();
+
+            builder.Services.AddTransient<GitHubService>();
+
+            builder.Services
+                .AddHttpClient("github")
+                .ConfigureHttpClient(httpClient =>
+                {
+                    httpClient.BaseAddress = new Uri("https://api.github.com");
+
+                    httpClient.DefaultRequestHeaders.UserAgent
+                        .Add(new ProductInfoHeaderValue("DevHabit", "1.0"));
+
+                    httpClient.DefaultRequestHeaders.Accept
+                        .Add(new MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
+                });
+
+            builder.Services.Configure<EncryptionOptions>(builder.Configuration.GetSection(EncryptionOptions.Section));
+
+            builder.Services.AddTransient<EncryptionService>();
+
+            return builder;
+        }
+
+        public WebApplicationBuilder AddAuthenticationServices()
+        {
+            builder.Services
+                .AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationIdentityDbContext>();
+
+            builder.Services.Configure<JwtAuthOptions>(builder.Configuration.GetSection(JwtAuthOptions.Section));
+
+            JwtAuthOptions jwtAuthOptions = builder.Configuration
+                .GetSection(JwtAuthOptions.Section)
+                .Get<JwtAuthOptions>()!;
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidIssuer = jwtAuthOptions.Issuer,
+                    ValidAudience = jwtAuthOptions.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtAuthOptions.Key)),
+                };
+            });
+
+            builder.Services.AddAuthorization();
+
+            return builder;
+        }
     }
 }
