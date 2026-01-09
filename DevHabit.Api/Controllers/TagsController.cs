@@ -1,5 +1,4 @@
-﻿using System.Net.Mime;
-using Asp.Versioning;
+﻿using Asp.Versioning;
 using DevHabit.Api.Database;
 using DevHabit.Api.Dtos.Common;
 using DevHabit.Api.Dtos.Tags;
@@ -18,11 +17,6 @@ namespace DevHabit.Api.Controllers;
 [Route("tags")]
 [Authorize(Roles = Roles.Member)]
 [ApiVersion(1.0)]
-[Produces(
-    MediaTypeNames.Application.Json,
-    VendorMediaTypeNames.Application.JsonV1,
-    VendorMediaTypeNames.Application.HateoasJson,
-    VendorMediaTypeNames.Application.HateoasJsonV1)]
 public sealed class TagsController(
     ApplicationDbContext dbContext,
     LinkService linkService,
@@ -57,7 +51,7 @@ public sealed class TagsController(
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<TagDto>> GetTag(string id, [FromHeader] string? accept)
+    public async Task<ActionResult<TagDto>> GetTag([FromRoute] string id, [FromHeader] string? accept)
     {
         string? userId = await userContext.GetUserIdAsync();
 
@@ -86,9 +80,9 @@ public sealed class TagsController(
 
     [HttpPost]
     public async Task<ActionResult<TagDto>> CreateTag(
-        CreateTagDto createTagDto,
-        IValidator<CreateTagDto> validator,
-        ProblemDetailsFactory problemDetailsFactory)
+        [FromBody] CreateTagDto createTagDto,
+        [FromServices] IValidator<CreateTagDto> validator,
+        [FromServices] ProblemDetailsFactory problemDetailsFactory)
     {
         string? userId = await userContext.GetUserIdAsync();
 
@@ -126,7 +120,7 @@ public sealed class TagsController(
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateTag(string id, UpdateTagDto updateTagDto)
+    public async Task<ActionResult> UpdateTag([FromRoute] string id, [FromBody] UpdateTagDto updateTagDto)
     {
         string? userId = await userContext.GetUserIdAsync();
 
@@ -150,7 +144,7 @@ public sealed class TagsController(
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteTag(string id)
+    public async Task<ActionResult> DeleteTag([FromRoute] string id)
     {
         string? userId = await userContext.GetUserIdAsync();
 

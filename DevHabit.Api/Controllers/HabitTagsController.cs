@@ -2,6 +2,7 @@
 using DevHabit.Api.Database;
 using DevHabit.Api.Dtos.HabitTags;
 using DevHabit.Api.Entities;
+using DevHabit.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,14 +13,24 @@ namespace DevHabit.Api.Controllers;
 [Route("habits/{habitId}/tags")]
 [ApiVersion(1.0)]
 [Authorize(Roles = Roles.Member)]
-public sealed class HabitTagsController(ApplicationDbContext dbContext) : ControllerBase
+public sealed class HabitTagsController(ApplicationDbContext dbContext, UserContext userContext) : ControllerBase
 {
     public static readonly string Name = nameof(HabitTagsController).Replace("Controller", string.Empty);
 
     [HttpPut]
-    public async Task<ActionResult> UpsertHabitTags(string habitId, UpsertHabitTagsDto upsertHabitTagsDto)
+    public async Task<ActionResult> UpsertHabitTags(
+        [FromRoute] string habitId,
+        [FromBody] UpsertHabitTagsDto upsertHabitTagsDto)
     {
+        string? userId = await userContext.GetUserIdAsync();
+
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return Unauthorized();
+        }
+
         Habit? habit = await dbContext.Habits
+            .Where(x => x.UserId == userId)
             .Include(x => x.HabitTags)
             .FirstOrDefaultAsync(x => x.Id == habitId);
 
@@ -36,7 +47,7 @@ public sealed class HabitTagsController(ApplicationDbContext dbContext) : Contro
         }
 
         List<string> existingTagIds = await dbContext.Tags
-            .Where(x => upsertHabitTagsDto.TagIds.Contains(x.Id))
+            .Where(x => upsertHabitTagsDto.TagIds.Contains(x.Id) && x.UserId == userId)
             .Select(x => x.Id)
             .ToListAsync();
 
@@ -62,8 +73,23 @@ public sealed class HabitTagsController(ApplicationDbContext dbContext) : Contro
     }
 
     [HttpDelete("{tagId}")]
-    public async Task<ActionResult> DeleteHabitTag(string habitId, string tagId)
+    public async Task<ActionResult> DeleteHabitTag([FromRoute] string habitId, [FromRoute] string tagId)
     {
+        string? userId = await userContext.GetUserIdAsync();
+
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return Unauthorized();
+        }
+
+        bool habitExists = await dbContext.Habits.AnyAsync(x => x.Id == habitId && x.UserId == userId);
+        bool tagExists = await dbContext.Tags.AnyAsync(x => x.Id == tagId && x.UserId == userId);
+
+        if (!habitExists || !tagExists)
+        {
+            return NotFound();
+        }
+
         HabitTag? habitTag = await dbContext.HabitTags
             .SingleOrDefaultAsync(x => x.HabitId == habitId && x.TagId == tagId);
 

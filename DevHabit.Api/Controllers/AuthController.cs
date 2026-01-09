@@ -26,7 +26,7 @@ public sealed class AuthController(
     IOptions<JwtAuthOptions> jwtAuthOptions) : ControllerBase
 {
     [HttpPost("register")]
-    public async Task<ActionResult<TokenDto>> Register(RegisterUserDto registerUserDto)
+    public async Task<ActionResult<TokenDto>> Register([FromBody] RegisterUserDto registerUserDto)
     {
         await using IDbContextTransaction transaction =
             await applicationIdentityDbContext.Database.BeginTransactionAsync();
@@ -45,7 +45,7 @@ public sealed class AuthController(
 
         if (!userIdentityResult.Succeeded)
         {
-            return Problem(detail: "Unable to register user", statusCode: StatusCodes.Status400BadRequest,
+            return Problem(statusCode: StatusCodes.Status400BadRequest, detail: "Unable to register user",
                 extensions: new Dictionary<string, object?>
                 {
                     { "errors", userIdentityResult.Errors.ToDictionary(x => x.Code, x => x.Description) }
@@ -56,7 +56,7 @@ public sealed class AuthController(
 
         if (!roleIdentityResult.Succeeded)
         {
-            return Problem(detail: "Unable to register user", statusCode: StatusCodes.Status400BadRequest,
+            return Problem(statusCode: StatusCodes.Status400BadRequest, detail: "Unable to register user",
                 extensions: new Dictionary<string, object?>
                 {
                     { "errors", roleIdentityResult.Errors.ToDictionary(x => x.Code, x => x.Description) }
@@ -88,7 +88,7 @@ public sealed class AuthController(
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<TokenDto>> Login(LoginUserDto loginUserDto)
+    public async Task<ActionResult<TokenDto>> Login([FromBody] LoginUserDto loginUserDto)
     {
         IdentityUser? identityUser = await userManager.FindByEmailAsync(loginUserDto.Email);
 
@@ -116,7 +116,7 @@ public sealed class AuthController(
     }
 
     [HttpPost("refresh")]
-    public async Task<ActionResult<TokenDto>> Refresh(RefreshTokenDto refreshTokenDto)
+    public async Task<ActionResult<TokenDto>> Refresh([FromBody] RefreshTokenDto refreshTokenDto)
     {
         RefreshToken? refreshToken = await applicationIdentityDbContext.RefreshTokens
             .Include(x => x.User)

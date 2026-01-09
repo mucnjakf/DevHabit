@@ -1,5 +1,4 @@
 ﻿using System.Dynamic;
-using System.Net.Mime;
 using Asp.Versioning;
 using DevHabit.Api.Database;
 using DevHabit.Api.Dtos.Common;
@@ -19,13 +18,6 @@ namespace DevHabit.Api.Controllers;
 [Route("habits")]
 [ApiVersion(1.0)]
 [Authorize(Roles = Roles.Member)]
-[Produces(
-    MediaTypeNames.Application.Json,
-    VendorMediaTypeNames.Application.JsonV1,
-    VendorMediaTypeNames.Application.JsonV2,
-    VendorMediaTypeNames.Application.HateoasJson,
-    VendorMediaTypeNames.Application.HateoasJsonV1,
-    VendorMediaTypeNames.Application.HateoasJsonV2)]
 public sealed class HabitsController(
     ApplicationDbContext dbContext,
     LinkService linkService,
@@ -33,9 +25,10 @@ public sealed class HabitsController(
 {
     [HttpGet]
     public async Task<IActionResult> GetHabits(
+        [FromHeader(Name = "Accept")] string accept,
         [FromQuery] HabitsQueryParameters parameters,
-        SortMappingProvider sortMappingProvider,
-        DataShapingService dataShapingService)
+        [FromServices] SortMappingProvider sortMappingProvider,
+        [FromServices] DataShapingService dataShapingService)
     {
         string? userId = await userContext.GetUserIdAsync();
 
@@ -80,7 +73,7 @@ public sealed class HabitsController(
             .Take(parameters.PageSize)
             .ToListAsync();
 
-        bool includeLinks = parameters.Accept is VendorMediaTypeNames.Application.HateoasJson;
+        bool includeLinks = accept is VendorMediaTypeNames.Application.HateoasJson;
 
         var paginationResult = new PaginationResult<ExpandoObject>
         {
@@ -107,10 +100,10 @@ public sealed class HabitsController(
     [HttpGet("{id}")]
     [ApiVersion(1)]
     public async Task<IActionResult> GetHabit(
-        string id,
-        string? fields,
+        [FromRoute] string id,
+        [FromQuery] string? fields,
         [FromHeader(Name = "Accept")] string? accept,
-        DataShapingService dataShapingService)
+        [FromServices] DataShapingService dataShapingService)
     {
         string? userId = await userContext.GetUserIdAsync();
 
@@ -151,10 +144,10 @@ public sealed class HabitsController(
     [HttpGet("{id}")]
     [ApiVersion(2)]
     public async Task<IActionResult> GetHabitV2(
-        string id,
-        string? fields,
+        [FromRoute] string id,
+        [FromQuery] string? fields,
         [FromHeader(Name = "Accept")] string? accept,
-        DataShapingService dataShapingService)
+        [FromServices] DataShapingService dataShapingService)
     {
         string? userId = await userContext.GetUserIdAsync();
 
@@ -194,8 +187,8 @@ public sealed class HabitsController(
 
     [HttpPost]
     public async Task<ActionResult<HabitDto>> CreateHabit(
-        CreateHabitDto createHabitDto,
-        IValidator<CreateHabitDto> validator)
+        [FromBody] CreateHabitDto createHabitDto,
+        [FromServices] IValidator<CreateHabitDto> validator)
     {
         string? userId = await userContext.GetUserIdAsync();
 
@@ -219,7 +212,7 @@ public sealed class HabitsController(
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateHabit(string id, UpdateHabitDto updateHabitDto)
+    public async Task<ActionResult> UpdateHabit([FromRoute] string id, [FromBody] UpdateHabitDto updateHabitDto)
     {
         string? userId = await userContext.GetUserIdAsync();
 
@@ -243,7 +236,9 @@ public sealed class HabitsController(
     }
 
     [HttpPatch("{id}")]
-    public async Task<ActionResult> PatchHabit(string id, JsonPatchDocument<HabitDto> patchDocument)
+    public async Task<ActionResult> PatchHabit(
+        [FromRoute] string id,
+        [FromBody] JsonPatchDocument<HabitDto> patchDocument)
     {
         string? userId = await userContext.GetUserIdAsync();
 
@@ -278,7 +273,7 @@ public sealed class HabitsController(
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteHabit(string id)
+    public async Task<ActionResult> DeleteHabit([FromRoute] string id)
     {
         string? userId = await userContext.GetUserIdAsync();
 

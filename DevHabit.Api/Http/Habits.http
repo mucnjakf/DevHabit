@@ -1,7 +1,7 @@
 ### Get paginated habits
 
 < {%
-    request.variables.set("q", "")
+    request.variables.set("search", "")
     request.variables.set("type", "")
     request.variables.set("status", "")
     request.variables.set("sort", "")
@@ -10,7 +10,7 @@
     request.variables.set("pageSize", "10")
 %}
 GET {{hostAddress}}/habits
-    ?q={{q}}
+    ?search={{search}}
     &type={{type}}
     &status={{status}}
     &sort={{sort}}

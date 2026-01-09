@@ -7,10 +7,10 @@ namespace DevHabit.Api.Services;
 public sealed class GitHubService(IHttpClientFactory httpClientFactory, ILogger<GitHubService> logger)
 {
     public async Task<GitHubUserProfileDto?> GetUserProfileAsync(
-        string accessToken,
+        string gitHubPat,
         CancellationToken cancellationToken = default)
     {
-        using HttpClient httpClient = CreateGitHubClient(accessToken);
+        using HttpClient httpClient = CreateGitHubClient(gitHubPat);
 
         HttpResponseMessage httpResponseMessage = await httpClient.GetAsync("user", cancellationToken);
 
@@ -30,10 +30,10 @@ public sealed class GitHubService(IHttpClientFactory httpClientFactory, ILogger<
 
     public async Task<IReadOnlyList<GitHubUserEventDto>?> GetUserEventsAsync(
         string username,
-        string accessToken,
+        string gitHubPat,
         CancellationToken cancellationToken = default)
     {
-        using HttpClient httpClient = CreateGitHubClient(accessToken);
+        using HttpClient httpClient = CreateGitHubClient(gitHubPat);
 
         HttpResponseMessage httpResponseMessage = await httpClient
             .GetAsync($"users/{username}/events?per_page=100", cancellationToken);
@@ -52,10 +52,10 @@ public sealed class GitHubService(IHttpClientFactory httpClientFactory, ILogger<
         return JsonConvert.DeserializeObject<List<GitHubUserEventDto>>(content);
     }
 
-    private HttpClient CreateGitHubClient(string accessToken)
+    private HttpClient CreateGitHubClient(string gitHubPat)
     {
         HttpClient httpClient = httpClientFactory.CreateClient("github");
-        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", gitHubPat);
 
         return httpClient;
     }

@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DevHabit.Api.Database.Configurations;
 
-public sealed class GitHubAccessTokenTypeConfiguration : IEntityTypeConfiguration<GitHubAccessToken>
+public sealed class GitHubPatTypeConfiguration : IEntityTypeConfiguration<GitHubPat>
 {
-    public void Configure(EntityTypeBuilder<GitHubAccessToken> builder)
+    public void Configure(EntityTypeBuilder<GitHubPat> builder)
     {
         builder.HasKey(x => x.Id);
 
@@ -19,6 +19,6 @@ public sealed class GitHubAccessTokenTypeConfiguration : IEntityTypeConfiguratio
         builder
             .HasOne<User>()
             .WithOne()
-            .HasForeignKey<GitHubAccessToken>(x => x.UserId);
+            .HasForeignKey<GitHubPat>(x => x.UserId);
     }
 }

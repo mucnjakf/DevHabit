@@ -1,6 +1,6 @@
 ﻿namespace DevHabit.Api.Entities;
 
-public sealed class GitHubAccessToken
+public sealed class GitHubPat
 {
     public string Id { get; set; }
 

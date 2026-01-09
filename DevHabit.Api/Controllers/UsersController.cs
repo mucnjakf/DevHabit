@@ -17,7 +17,7 @@ public sealed class UsersController(ApplicationDbContext dbContext, UserContext 
 {
     [HttpGet("{id}")]
     [Authorize(Roles = Roles.Admin)]
-    public async Task<ActionResult<UserDto>> GetUserById(string id)
+    public async Task<ActionResult<UserDto>> GetUserById([FromRoute] string id)
     {
         string? userId = await userContext.GetUserIdAsync();
 

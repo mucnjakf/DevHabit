@@ -153,7 +153,7 @@ public static class DependencyInjection
 
             builder.Services.AddScoped<UserContext>();
 
-            builder.Services.AddScoped<GitHubAccessTokenService>();
+            builder.Services.AddScoped<GitHubPatService>();
 
             builder.Services.AddTransient<GitHubService>();
 

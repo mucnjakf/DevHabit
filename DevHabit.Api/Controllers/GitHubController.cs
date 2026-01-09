@@ -12,13 +12,13 @@ namespace DevHabit.Api.Controllers;
 [ApiVersion(1.0)]
 [Authorize(Roles = Roles.Member)]
 public sealed class GitHubController(
-    GitHubAccessTokenService gitHubAccessTokenService,
+    GitHubPatService gitHubPatService,
     GitHubService gitHubService,
     UserContext userContext,
     LinkService linkService) : ControllerBase
 {
     [HttpPut("personal-access-token")]
-    public async Task<IActionResult> StoreAccessToken(StoreGitHubAccessTokenDto storeGitHubAccessTokenDto)
+    public async Task<IActionResult> StoreAccessToken([FromBody] StoreGitHubPatDto storeGitHubPatDto)
     {
         string? userId = await userContext.GetUserIdAsync();
 
@@ -27,7 +27,7 @@ public sealed class GitHubController(
             return Unauthorized();
         }
 
-        await gitHubAccessTokenService.StoreAsync(userId, storeGitHubAccessTokenDto);
+        await gitHubPatService.StoreAsync(userId, storeGitHubPatDto);
 
         return NoContent();
     }
@@ -42,7 +42,7 @@ public sealed class GitHubController(
             return Unauthorized();
         }
 
-        await gitHubAccessTokenService.RevokeAsync(userId);
+        await gitHubPatService.RevokeAsync(userId);
 
         return NoContent();
     }
@@ -57,14 +57,14 @@ public sealed class GitHubController(
             return Unauthorized();
         }
 
-        string? accessToken = await gitHubAccessTokenService.GetAsync(userId);
+        string? gitHubPat = await gitHubPatService.GetAsync(userId);
 
-        if (string.IsNullOrWhiteSpace(accessToken))
+        if (string.IsNullOrWhiteSpace(gitHubPat))
         {
             return NotFound();
         }
 
-        GitHubUserProfileDto? gitHubUserProfileDto = await gitHubService.GetUserProfileAsync(accessToken);
+        GitHubUserProfileDto? gitHubUserProfileDto = await gitHubService.GetUserProfileAsync(gitHubPat);
 
         if (gitHubUserProfileDto is null)
         {
