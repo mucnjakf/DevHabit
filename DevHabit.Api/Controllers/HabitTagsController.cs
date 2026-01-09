@@ -3,6 +3,7 @@ using DevHabit.Api.Database;
 using DevHabit.Api.Dtos.HabitTags;
 using DevHabit.Api.Entities;
 using DevHabit.Api.Services;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,8 +21,11 @@ public sealed class HabitTagsController(ApplicationDbContext dbContext, UserCont
     [HttpPut]
     public async Task<ActionResult> UpsertHabitTags(
         [FromRoute] string habitId,
-        [FromBody] UpsertHabitTagsDto upsertHabitTagsDto)
+        [FromBody] UpsertHabitTagsDto upsertHabitTagsDto,
+        [FromServices] IValidator<UpsertHabitTagsDto> validator)
     {
+        await validator.ValidateAndThrowAsync(upsertHabitTagsDto);
+
         string? userId = await userContext.GetUserIdAsync();
 
         if (string.IsNullOrWhiteSpace(userId))

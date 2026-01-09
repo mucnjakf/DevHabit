@@ -81,9 +81,10 @@ public sealed class TagsController(
     [HttpPost]
     public async Task<ActionResult<TagDto>> CreateTag(
         [FromBody] CreateTagDto createTagDto,
-        [FromServices] IValidator<CreateTagDto> validator,
-        [FromServices] ProblemDetailsFactory problemDetailsFactory)
+        [FromServices] IValidator<CreateTagDto> validator)
     {
+        await validator.ValidateAndThrowAsync(createTagDto);
+
         string? userId = await userContext.GetUserIdAsync();
 
         if (string.IsNullOrWhiteSpace(userId))
@@ -91,23 +92,11 @@ public sealed class TagsController(
             return Unauthorized();
         }
 
-        ValidationResult validationResult = await validator.ValidateAsync(createTagDto);
-
-        if (!validationResult.IsValid)
-        {
-            ProblemDetails problem = problemDetailsFactory
-                .CreateProblemDetails(HttpContext, StatusCodes.Status400BadRequest);
-
-            problem.Extensions.Add("errors", validationResult.ToDictionary());
-
-            return BadRequest(problem);
-        }
-
         Tag tag = createTagDto.ToEntity(userId);
 
         if (await dbContext.Tags.AnyAsync(x => x.Name == tag.Name))
         {
-            return Problem(detail: $"The tag '{tag.Name}' already exists", statusCode: StatusCodes.Status409Conflict);
+            return Problem(statusCode: StatusCodes.Status409Conflict, detail: $"The tag '{tag.Name}' already exists");
         }
 
         dbContext.Tags.Add(tag);
@@ -120,8 +109,13 @@ public sealed class TagsController(
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateTag([FromRoute] string id, [FromBody] UpdateTagDto updateTagDto)
+    public async Task<ActionResult> UpdateTag(
+        [FromRoute] string id,
+        [FromBody] UpdateTagDto updateTagDto,
+        [FromServices] IValidator<UpdateTagDto> validator)
     {
+        await validator.ValidateAndThrowAsync(updateTagDto);
+
         string? userId = await userContext.GetUserIdAsync();
 
         if (string.IsNullOrWhiteSpace(userId))

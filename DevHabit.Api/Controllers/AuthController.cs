@@ -5,6 +5,7 @@ using DevHabit.Api.Dtos.Users;
 using DevHabit.Api.Entities;
 using DevHabit.Api.Options;
 using DevHabit.Api.Services;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -26,8 +27,12 @@ public sealed class AuthController(
     IOptions<JwtAuthOptions> jwtAuthOptions) : ControllerBase
 {
     [HttpPost("register")]
-    public async Task<ActionResult<TokenDto>> Register([FromBody] RegisterUserDto registerUserDto)
+    public async Task<ActionResult<TokenDto>> Register(
+        [FromBody] RegisterUserDto registerUserDto,
+        [FromServices] IValidator<RegisterUserDto> validator)
     {
+        await validator.ValidateAndThrowAsync(registerUserDto);
+
         await using IDbContextTransaction transaction =
             await applicationIdentityDbContext.Database.BeginTransactionAsync();
 
@@ -88,8 +93,12 @@ public sealed class AuthController(
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<TokenDto>> Login([FromBody] LoginUserDto loginUserDto)
+    public async Task<ActionResult<TokenDto>> Login(
+        [FromBody] LoginUserDto loginUserDto,
+        [FromServices] IValidator<LoginUserDto> validator)
     {
+        await validator.ValidateAndThrowAsync(loginUserDto);
+
         IdentityUser? identityUser = await userManager.FindByEmailAsync(loginUserDto.Email);
 
         if (identityUser is null || !await userManager.CheckPasswordAsync(identityUser, loginUserDto.Password))
@@ -116,8 +125,12 @@ public sealed class AuthController(
     }
 
     [HttpPost("refresh")]
-    public async Task<ActionResult<TokenDto>> Refresh([FromBody] RefreshTokenDto refreshTokenDto)
+    public async Task<ActionResult<TokenDto>> Refresh(
+        [FromBody] RefreshTokenDto refreshTokenDto,
+        [FromServices] IValidator<RefreshTokenDto> validator)
     {
+        await validator.ValidateAndThrowAsync(refreshTokenDto);
+
         RefreshToken? refreshToken = await applicationIdentityDbContext.RefreshTokens
             .Include(x => x.User)
             .FirstOrDefaultAsync(x => x.Value == refreshTokenDto.Value);

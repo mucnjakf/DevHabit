@@ -2,6 +2,7 @@
 using DevHabit.Api.Dtos.GitHub;
 using DevHabit.Api.Entities;
 using DevHabit.Api.Services;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,8 +19,12 @@ public sealed class GitHubController(
     LinkService linkService) : ControllerBase
 {
     [HttpPut("personal-access-token")]
-    public async Task<IActionResult> StoreAccessToken([FromBody] StoreGitHubPatDto storeGitHubPatDto)
+    public async Task<IActionResult> StoreAccessToken(
+        [FromBody] StoreGitHubPatDto storeGitHubPatDto,
+        [FromServices] IValidator<StoreGitHubPatDto> validator)
     {
+        await validator.ValidateAndThrowAsync(storeGitHubPatDto);
+
         string? userId = await userContext.GetUserIdAsync();
 
         if (string.IsNullOrWhiteSpace(userId))
@@ -48,7 +53,8 @@ public sealed class GitHubController(
     }
 
     [HttpGet("profile")]
-    public async Task<ActionResult<GitHubUserProfileDto>> GetUserProfile([FromHeader(Name = "Accept")] string? accept)
+    public async Task<ActionResult<GitHubUserProfileDto>> GetUserProfile(
+        [FromHeader(Name = "Accept")] string? accept)
     {
         string? userId = await userContext.GetUserIdAsync();
 

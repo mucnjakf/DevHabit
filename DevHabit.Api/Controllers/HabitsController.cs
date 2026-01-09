@@ -144,9 +144,9 @@ public sealed class HabitsController(
     [HttpGet("{id}")]
     [ApiVersion(2)]
     public async Task<IActionResult> GetHabitV2(
+        [FromHeader(Name = "Accept")] string accept,
         [FromRoute] string id,
         [FromQuery] string? fields,
-        [FromHeader(Name = "Accept")] string? accept,
         [FromServices] DataShapingService dataShapingService)
     {
         string? userId = await userContext.GetUserIdAsync();
@@ -190,14 +190,14 @@ public sealed class HabitsController(
         [FromBody] CreateHabitDto createHabitDto,
         [FromServices] IValidator<CreateHabitDto> validator)
     {
+        await validator.ValidateAndThrowAsync(createHabitDto);
+
         string? userId = await userContext.GetUserIdAsync();
 
         if (string.IsNullOrWhiteSpace(userId))
         {
             return Unauthorized();
         }
-
-        await validator.ValidateAndThrowAsync(createHabitDto);
 
         Habit habit = createHabitDto.ToEntity(userId);
 
@@ -212,8 +212,13 @@ public sealed class HabitsController(
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateHabit([FromRoute] string id, [FromBody] UpdateHabitDto updateHabitDto)
+    public async Task<ActionResult> UpdateHabit(
+        [FromRoute] string id,
+        [FromBody] UpdateHabitDto updateHabitDto,
+        [FromServices] IValidator<UpdateHabitDto> validator)
     {
+        await validator.ValidateAndThrowAsync(updateHabitDto);
+
         string? userId = await userContext.GetUserIdAsync();
 
         if (string.IsNullOrWhiteSpace(userId))
