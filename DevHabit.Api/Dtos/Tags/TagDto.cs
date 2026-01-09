@@ -2,7 +2,7 @@
 
 namespace DevHabit.Api.Dtos.Tags;
 
-public sealed record TagDto
+public sealed record TagDto : ILinksResponse
 {
     public required string Id { get; init; }
 

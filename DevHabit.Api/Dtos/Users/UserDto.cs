@@ -1,6 +1,8 @@
-﻿namespace DevHabit.Api.Dtos.Users;
+﻿using DevHabit.Api.Dtos.Common;
 
-public sealed record UserDto
+namespace DevHabit.Api.Dtos.Users;
+
+public sealed record UserDto : ILinksResponse
 {
     public required string Id { get; init; }
 
@@ -11,4 +13,6 @@ public sealed record UserDto
     public required DateTime CreatedAtUtc { get; init; }
 
     public required DateTime? UpdatedAtUtc { get; init; }
+
+    public List<LinkDto> Links { get; set; }
 }

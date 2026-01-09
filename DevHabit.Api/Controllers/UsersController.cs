@@ -13,7 +13,8 @@ namespace DevHabit.Api.Controllers;
 [Route("users")]
 [ApiVersion(1.0)]
 [Authorize(Roles = Roles.Member)]
-public sealed class UsersController(ApplicationDbContext dbContext, UserContext userContext) : ControllerBase
+public sealed class UsersController(ApplicationDbContext dbContext, UserContext userContext, LinkService linkService)
+    : ControllerBase
 {
     [HttpGet("{id}")]
     [Authorize(Roles = Roles.Admin)]
@@ -45,7 +46,7 @@ public sealed class UsersController(ApplicationDbContext dbContext, UserContext 
     }
 
     [HttpGet("me")]
-    public async Task<ActionResult<UserDto>> GetCurrentUser()
+    public async Task<ActionResult<UserDto>> GetCurrentUser([FromHeader(Name = "Accept")] string accept)
     {
         string? userId = await userContext.GetUserIdAsync();
 
@@ -64,6 +65,40 @@ public sealed class UsersController(ApplicationDbContext dbContext, UserContext 
             return NotFound();
         }
 
+        if (accept is VendorMediaTypeNames.Application.HateoasJson)
+        {
+            user.Links =
+            [
+                linkService.Create(nameof(GetCurrentUser), "self", HttpMethods.Get),
+                linkService.Create(nameof(UpdateCurrentUser), "update-current-user", HttpMethods.Put)
+            ];
+        }
+
         return Ok(user);
+    }
+
+    [HttpPut("me")]
+    public async Task<ActionResult> UpdateCurrentUser([FromBody] UpdateCurrentUserDto updateCurrentUserDto)
+    {
+        string? userId = await userContext.GetUserIdAsync();
+
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return Unauthorized();
+        }
+
+        User? user = await dbContext.Users.FirstOrDefaultAsync(x => x.Id == userId);
+
+        if (user is null)
+        {
+            return NotFound();
+        }
+
+        user.Name = updateCurrentUserDto.Name;
+        user.UpdatedAtUtc = DateTime.UtcNow;
+
+        await dbContext.SaveChangesAsync();
+
+        return NoContent();
     }
 }

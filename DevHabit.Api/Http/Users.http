@@ -13,4 +13,13 @@ GET {{hostAddress}}/users/me
 Accept: application/json
 Authorization: Bearer {{accessToken}}
 
-###
+### Update current user
+
+PUT {{hostAddress}}/users/me
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "New name"
+}

@@ -207,5 +207,23 @@ public static class DependencyInjection
 
             return builder;
         }
+
+        public WebApplicationBuilder AddCorsPolicy()
+        {
+            CorsOptions corsOptions = builder.Configuration.GetSection(CorsOptions.Section).Get<CorsOptions>()!;
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(CorsOptions.PolicyName, policy =>
+                {
+                    policy
+                        .WithOrigins(corsOptions.AllowedOrigins)
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
+
+            return builder;
+        }
     }
 }
