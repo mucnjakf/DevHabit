@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using DevHabit.Api.Constants;
 using DevHabit.Api.Database;
 using DevHabit.Api.Dtos.Auth;
 using DevHabit.Api.Dtos.Users;
@@ -21,8 +22,8 @@ namespace DevHabit.Api.Controllers;
 [AllowAnonymous]
 public sealed class AuthController(
     UserManager<IdentityUser> userManager,
-    ApplicationIdentityDbContext applicationIdentityDbContext,
-    ApplicationDbContext applicationDbContext,
+    DevHabitIdentityDbContext devHabitIdentityDbContext,
+    DevHabitDbContext devHabitDbContext,
     TokenProvider tokenProvider,
     IOptions<JwtAuthOptions> jwtAuthOptions) : ControllerBase
 {
@@ -34,11 +35,11 @@ public sealed class AuthController(
         await validator.ValidateAndThrowAsync(registerUserDto);
 
         await using IDbContextTransaction transaction =
-            await applicationIdentityDbContext.Database.BeginTransactionAsync();
+            await devHabitIdentityDbContext.Database.BeginTransactionAsync();
 
-        applicationDbContext.Database.SetDbConnection(applicationIdentityDbContext.Database.GetDbConnection());
+        devHabitDbContext.Database.SetDbConnection(devHabitIdentityDbContext.Database.GetDbConnection());
 
-        await applicationDbContext.Database.UseTransactionAsync(transaction.GetDbTransaction());
+        await devHabitDbContext.Database.UseTransactionAsync(transaction.GetDbTransaction());
 
         var identityUser = new IdentityUser
         {
@@ -71,10 +72,15 @@ public sealed class AuthController(
         User user = registerUserDto.ToEntity();
         user.IdentityId = identityUser.Id;
 
-        await applicationDbContext.Users.AddAsync(user);
-        await applicationDbContext.SaveChangesAsync();
+        await devHabitDbContext.Users.AddAsync(user);
+        await devHabitDbContext.SaveChangesAsync();
 
-        TokenDto token = tokenProvider.Create(new GetTokenDto(identityUser.Id, identityUser.Email, [Roles.Member]));
+        TokenDto token = tokenProvider.Create(new GetTokenDto
+        {
+            UserId = identityUser.Id,
+            Email = identityUser.Email,
+            Roles = [Roles.Member]
+        });
 
         var refreshToken = new RefreshToken
         {
@@ -84,8 +90,8 @@ public sealed class AuthController(
             ExpiresAtUtc = DateTime.UtcNow.AddDays(jwtAuthOptions.Value.RefreshTokenExpirationInDays)
         };
 
-        await applicationIdentityDbContext.RefreshTokens.AddAsync(refreshToken);
-        await applicationIdentityDbContext.SaveChangesAsync();
+        await devHabitIdentityDbContext.RefreshTokens.AddAsync(refreshToken);
+        await devHabitIdentityDbContext.SaveChangesAsync();
 
         await transaction.CommitAsync();
 
@@ -108,7 +114,12 @@ public sealed class AuthController(
 
         IList<string> roles = await userManager.GetRolesAsync(identityUser);
 
-        TokenDto token = tokenProvider.Create(new GetTokenDto(identityUser.Id, identityUser.Email!, roles));
+        TokenDto token = tokenProvider.Create(new GetTokenDto
+        {
+            UserId = identityUser.Id,
+            Email = identityUser.Email!,
+            Roles = roles
+        });
 
         var refreshToken = new RefreshToken
         {
@@ -118,8 +129,8 @@ public sealed class AuthController(
             ExpiresAtUtc = DateTime.UtcNow.AddDays(jwtAuthOptions.Value.RefreshTokenExpirationInDays)
         };
 
-        await applicationIdentityDbContext.RefreshTokens.AddAsync(refreshToken);
-        await applicationIdentityDbContext.SaveChangesAsync();
+        await devHabitIdentityDbContext.RefreshTokens.AddAsync(refreshToken);
+        await devHabitIdentityDbContext.SaveChangesAsync();
 
         return Ok(token);
     }
@@ -131,7 +142,7 @@ public sealed class AuthController(
     {
         await validator.ValidateAndThrowAsync(refreshTokenDto);
 
-        RefreshToken? refreshToken = await applicationIdentityDbContext.RefreshTokens
+        RefreshToken? refreshToken = await devHabitIdentityDbContext.RefreshTokens
             .Include(x => x.User)
             .FirstOrDefaultAsync(x => x.Value == refreshTokenDto.Value);
 
@@ -142,12 +153,17 @@ public sealed class AuthController(
 
         IList<string> roles = await userManager.GetRolesAsync(refreshToken.User);
 
-        TokenDto token = tokenProvider.Create(new GetTokenDto(refreshToken.User.Id, refreshToken.User.Email!, roles));
+        TokenDto token = tokenProvider.Create(new GetTokenDto
+        {
+            UserId = refreshToken.User.Id,
+            Email = refreshToken.User.Email!,
+            Roles = roles
+        });
 
         refreshToken.Value = token.RefreshToken;
         refreshToken.ExpiresAtUtc = DateTime.UtcNow.AddDays(jwtAuthOptions.Value.RefreshTokenExpirationInDays);
 
-        await applicationIdentityDbContext.SaveChangesAsync();
+        await devHabitIdentityDbContext.SaveChangesAsync();
 
         return Ok(token);
     }

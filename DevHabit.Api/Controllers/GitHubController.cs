@@ -1,7 +1,9 @@
 ﻿using Asp.Versioning;
+using DevHabit.Api.Constants;
 using DevHabit.Api.Dtos.GitHub;
 using DevHabit.Api.Entities;
 using DevHabit.Api.Services;
+using DevHabit.Api.Services.Hateoas;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

@@ -1,8 +1,10 @@
 ﻿using Asp.Versioning;
+using DevHabit.Api.Constants;
 using DevHabit.Api.Database;
 using DevHabit.Api.Dtos.Users;
 using DevHabit.Api.Entities;
 using DevHabit.Api.Services;
+using DevHabit.Api.Services.Hateoas;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +15,7 @@ namespace DevHabit.Api.Controllers;
 [Route("users")]
 [ApiVersion(1.0)]
 [Authorize(Roles = Roles.Member)]
-public sealed class UsersController(ApplicationDbContext dbContext, UserContext userContext, LinkService linkService)
+public sealed class UsersController(DevHabitDbContext dbContext, UserContext userContext, LinkService linkService)
     : ControllerBase
 {
     [HttpGet("{id}")]

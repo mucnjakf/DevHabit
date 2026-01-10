@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace DevHabit.Api.Migrations.Application
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(DevHabitDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -66,6 +66,10 @@ namespace DevHabit.Api.Migrations.Application
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
                         .HasColumnName("id");
+
+                    b.Property<int?>("AutomationSource")
+                        .HasColumnType("integer")
+                        .HasColumnName("automation_source");
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone")

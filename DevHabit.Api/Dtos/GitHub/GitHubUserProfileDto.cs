@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace DevHabit.Api.Dtos.GitHub;
 
-public sealed record GitHubUserProfileDto : ILinksResponse
+public sealed record GitHubUserProfileDto : ILinksResponseDto
 {
     public string Login { get; init; }
 

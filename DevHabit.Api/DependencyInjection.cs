@@ -1,12 +1,14 @@
 ﻿using System.Net.Http.Headers;
 using System.Text;
 using Asp.Versioning;
+using DevHabit.Api.Constants;
 using DevHabit.Api.Database;
 using DevHabit.Api.Dtos.Habits;
 using DevHabit.Api.Entities;
 using DevHabit.Api.Middleware;
 using DevHabit.Api.Options;
 using DevHabit.Api.Services;
+using DevHabit.Api.Services.Hateoas;
 using DevHabit.Api.Services.Sorting;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -91,14 +93,14 @@ public static class DependencyInjection
 
         public WebApplicationBuilder AddDatabase()
         {
-            builder.Services.AddDbContext<ApplicationDbContext>(options => options
+            builder.Services.AddDbContext<DevHabitDbContext>(options => options
                 .UseNpgsql(
                     builder.Configuration.GetConnectionString("Default"),
                     npgsqlOptions =>
                         npgsqlOptions.MigrationsHistoryTable(HistoryRepository.DefaultTableName, Schemas.Application))
                 .UseSnakeCaseNamingConvention());
 
-            builder.Services.AddDbContext<ApplicationIdentityDbContext>(options => options
+            builder.Services.AddDbContext<DevHabitIdentityDbContext>(options => options
                 .UseNpgsql(
                     builder.Configuration.GetConnectionString("Default"),
                     npgsqlOptions => npgsqlOptions
@@ -181,7 +183,7 @@ public static class DependencyInjection
         {
             builder.Services
                 .AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationIdentityDbContext>();
+                .AddEntityFrameworkStores<DevHabitIdentityDbContext>();
 
             builder.Services.Configure<JwtAuthOptions>(builder.Configuration.GetSection(JwtAuthOptions.Section));
 

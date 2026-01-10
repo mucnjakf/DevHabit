@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace DevHabit.Api.Migrations.Identity
 {
-    [DbContext(typeof(ApplicationIdentityDbContext))]
+    [DbContext(typeof(DevHabitIdentityDbContext))]
     [Migration("20260106224253_AddRefreshToken")]
     partial class AddRefreshToken
     {

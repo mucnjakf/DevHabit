@@ -1,4 +1,5 @@
 ﻿using DevHabit.Api.Entities;
+using DevHabit.Api.Enums;
 using DevHabit.Api.Services.Sorting;
 
 namespace DevHabit.Api.Dtos.Habits;

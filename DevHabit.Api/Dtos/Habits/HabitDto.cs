@@ -1,9 +1,10 @@
 ﻿using DevHabit.Api.Dtos.Common;
 using DevHabit.Api.Entities;
+using DevHabit.Api.Enums;
 
 namespace DevHabit.Api.Dtos.Habits;
 
-public sealed record HabitDto : ILinksResponse
+public sealed record HabitDto : ILinksResponseDto
 {
     public required string Id { get; init; }
 

@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using DevHabit.Api.Constants;
 using DevHabit.Api.Database;
 using DevHabit.Api.Dtos.HabitTags;
 using DevHabit.Api.Entities;
@@ -14,7 +15,7 @@ namespace DevHabit.Api.Controllers;
 [Route("habits/{habitId}/tags")]
 [ApiVersion(1.0)]
 [Authorize(Roles = Roles.Member)]
-public sealed class HabitTagsController(ApplicationDbContext dbContext, UserContext userContext) : ControllerBase
+public sealed class HabitTagsController(DevHabitDbContext dbContext, UserContext userContext) : ControllerBase
 {
     public static readonly string Name = nameof(HabitTagsController).Replace("Controller", string.Empty);
 

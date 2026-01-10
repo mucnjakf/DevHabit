@@ -1,5 +1,5 @@
-﻿using DevHabit.Api.Database;
-using DevHabit.Api.Entities;
+﻿using DevHabit.Api.Constants;
+using DevHabit.Api.Database;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,18 +13,18 @@ public static class DatabaseExtensions
         {
             using IServiceScope scope = app.Services.CreateScope();
 
-            await using ApplicationDbContext applicationDbContext = scope.ServiceProvider
-                .GetRequiredService<ApplicationDbContext>();
+            await using DevHabitDbContext devHabitDbContext = scope.ServiceProvider
+                .GetRequiredService<DevHabitDbContext>();
 
-            await using ApplicationIdentityDbContext applicationIdentityDbContext = scope.ServiceProvider
-                .GetRequiredService<ApplicationIdentityDbContext>();
+            await using DevHabitIdentityDbContext devHabitIdentityDbContext = scope.ServiceProvider
+                .GetRequiredService<DevHabitIdentityDbContext>();
 
             try
             {
-                await applicationDbContext.Database.MigrateAsync();
+                await devHabitDbContext.Database.MigrateAsync();
                 app.Logger.LogInformation("Application database migrations applied successfully");
 
-                await applicationIdentityDbContext.Database.MigrateAsync();
+                await devHabitIdentityDbContext.Database.MigrateAsync();
                 app.Logger.LogInformation("Identity database migrations applied successfully");
             }
             catch (Exception e)

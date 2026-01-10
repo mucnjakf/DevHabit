@@ -13,7 +13,11 @@ public sealed class TokenProvider(IOptions<JwtAuthOptions> jwtAuthOptions)
 {
     public TokenDto Create(GetTokenDto getTokenDto)
     {
-        return new TokenDto(GenerateAccessToken(getTokenDto), GenerateRefreshToken());
+        return new TokenDto
+        {
+            AccessToken = GenerateAccessToken(getTokenDto),
+            RefreshToken = GenerateRefreshToken()
+        };
     }
 
     private string GenerateAccessToken(GetTokenDto getTokenDto)

@@ -1,6 +1,6 @@
 ﻿using DevHabit.Api.Dtos.Common;
 
-namespace DevHabit.Api.Services;
+namespace DevHabit.Api.Services.Hateoas;
 
 public sealed class LinkService(LinkGenerator linkGenerator, IHttpContextAccessor httpContextAccessor)
 {

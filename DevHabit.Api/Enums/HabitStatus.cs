@@ -1,4 +1,4 @@
-﻿namespace DevHabit.Api.Entities;
+﻿namespace DevHabit.Api.Enums;
 
 public enum HabitStatus
 {

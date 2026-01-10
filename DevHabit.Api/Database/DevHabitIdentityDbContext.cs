@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DevHabit.Api.Database;
 
-public sealed class ApplicationIdentityDbContext(DbContextOptions<ApplicationIdentityDbContext> options)
+public sealed class DevHabitIdentityDbContext(DbContextOptions<DevHabitIdentityDbContext> options)
     : IdentityDbContext(options)
 {
     public DbSet<RefreshToken> RefreshTokens { get; set; }

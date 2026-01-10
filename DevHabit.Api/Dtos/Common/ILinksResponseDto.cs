@@ -1,6 +1,6 @@
 ﻿namespace DevHabit.Api.Dtos.Common;
 
-public interface ILinksResponse
+public interface ILinksResponseDto
 {
     List<LinkDto> Links { get; set; }
 }

@@ -2,9 +2,9 @@
 
 namespace DevHabit.Api.Dtos.Tags;
 
-public sealed record TagsCollectionDto : ICollectionResponse<TagDto>
+public sealed record TagsCollectionDto : ICollectionResponseDto<TagDto>
 {
-    public List<TagDto> Items { get; init; }
+    public required List<TagDto> Items { get; init; }
 
     public List<LinkDto> Links { get; set; }
 }

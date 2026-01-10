@@ -1,6 +1,6 @@
 ﻿namespace DevHabit.Api.Dtos.Common;
 
-public sealed record PaginationResult<T> : ICollectionResponse<T>, ILinksResponse
+public sealed record PaginationResultDto<T> : ICollectionResponseDto<T>, ILinksResponseDto
 {
     public List<T> Items { get; init; }
 

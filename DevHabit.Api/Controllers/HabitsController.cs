@@ -1,10 +1,13 @@
 ﻿using System.Dynamic;
 using Asp.Versioning;
+using DevHabit.Api.Constants;
 using DevHabit.Api.Database;
 using DevHabit.Api.Dtos.Common;
 using DevHabit.Api.Dtos.Habits;
 using DevHabit.Api.Entities;
+using DevHabit.Api.Extensions;
 using DevHabit.Api.Services;
+using DevHabit.Api.Services.Hateoas;
 using DevHabit.Api.Services.Sorting;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
@@ -19,7 +22,7 @@ namespace DevHabit.Api.Controllers;
 [ApiVersion(1.0)]
 [Authorize(Roles = Roles.Member)]
 public sealed class HabitsController(
-    ApplicationDbContext dbContext,
+    DevHabitDbContext dbContext,
     LinkService linkService,
     UserContext userContext) : ControllerBase
 {
@@ -75,7 +78,7 @@ public sealed class HabitsController(
 
         bool includeLinks = accept is VendorMediaTypeNames.Application.HateoasJson;
 
-        var paginationResult = new PaginationResult<ExpandoObject>
+        var paginationResult = new PaginationResultDto<ExpandoObject>
         {
             Items = dataShapingService.ShapeCollectionData(
                 habits,
@@ -201,7 +204,7 @@ public sealed class HabitsController(
 
         Habit habit = createHabitDto.ToEntity(userId);
 
-        dbContext.Habits.Add(habit);
+        await dbContext.Habits.AddAsync(habit);
 
         await dbContext.SaveChangesAsync();
 

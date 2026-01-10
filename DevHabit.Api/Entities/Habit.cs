@@ -1,10 +1,10 @@
-﻿namespace DevHabit.Api.Entities;
+﻿using DevHabit.Api.Enums;
+
+namespace DevHabit.Api.Entities;
 
 public sealed class Habit
 {
     public string Id { get; set; }
-
-    public string UserId { get; set; }
 
     public string Name { get; set; }
 
@@ -24,11 +24,15 @@ public sealed class Habit
 
     public Milestone? Milestone { get; set; }
 
+    public DateTime? LastCompletedAtUtc { get; set; }
+
+    public AutomationSource? AutomationSource { get; set; }
+
     public DateTime CreatedAtUtc { get; set; }
 
     public DateTime? UpdatedAtUtc { get; set; }
 
-    public DateTime? LastCompletedAtUtc { get; set; }
+    public string UserId { get; set; }
 
     public List<HabitTag> HabitTags { get; set; }
 

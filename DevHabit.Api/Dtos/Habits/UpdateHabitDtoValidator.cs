@@ -1,4 +1,5 @@
 ﻿using DevHabit.Api.Entities;
+using DevHabit.Api.Enums;
 using FluentValidation;
 
 namespace DevHabit.Api.Dtos.Habits;

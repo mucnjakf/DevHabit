@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DevHabit.Api.Services;
 
-public sealed class GitHubPatService(ApplicationDbContext dbContext, EncryptionService encryptionService)
+public sealed class GitHubPatService(DevHabitDbContext dbContext, EncryptionService encryptionService)
 {
     public async Task StoreAsync(
         string userId,

@@ -1,9 +1,11 @@
 ﻿using Asp.Versioning;
+using DevHabit.Api.Constants;
 using DevHabit.Api.Database;
 using DevHabit.Api.Dtos.Common;
 using DevHabit.Api.Dtos.Tags;
 using DevHabit.Api.Entities;
 using DevHabit.Api.Services;
+using DevHabit.Api.Services.Hateoas;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
@@ -18,7 +20,7 @@ namespace DevHabit.Api.Controllers;
 [Authorize(Roles = Roles.Member)]
 [ApiVersion(1.0)]
 public sealed class TagsController(
-    ApplicationDbContext dbContext,
+    DevHabitDbContext dbContext,
     LinkService linkService,
     UserContext userContext) : ControllerBase
 {

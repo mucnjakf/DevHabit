@@ -7,7 +7,7 @@ namespace DevHabit.Api.Services;
 
 public sealed class UserContext(
     IHttpContextAccessor httpContextAccessor,
-    ApplicationDbContext dbContext,
+    DevHabitDbContext dbContext,
     IMemoryCache memoryCache)
 {
     private const string CacheKeyPrefix = "users:id:";

@@ -2,7 +2,7 @@
 
 namespace DevHabit.Api.Dtos.Users;
 
-public sealed record UserDto : ILinksResponse
+public sealed record UserDto : ILinksResponseDto
 {
     public required string Id { get; init; }
 

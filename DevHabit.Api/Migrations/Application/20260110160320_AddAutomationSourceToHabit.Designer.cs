@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DevHabit.Api.Migrations.Application
 {
     [DbContext(typeof(DevHabitDbContext))]
-    [Migration("20260106231410_AddUserReference")]
-    partial class AddUserReference
+    [Migration("20260110160320_AddAutomationSourceToHabit")]
+    partial class AddAutomationSourceToHabit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,12 +26,53 @@ namespace DevHabit.Api.Migrations.Application
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("DevHabit.Api.Entities.GitHubPat", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at_utc");
+
+                    b.Property<DateTime>("ExpiresAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expires_at_utc");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("token");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_git_hub_pats");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_git_hub_pats_user_id");
+
+                    b.ToTable("git_hub_pats", "dev_habit");
+                });
+
             modelBuilder.Entity("DevHabit.Api.Entities.Habit", b =>
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
                         .HasColumnName("id");
+
+                    b.Property<int?>("AutomationSource")
+                        .HasColumnType("integer")
+                        .HasColumnName("automation_source");
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone")
@@ -197,6 +238,16 @@ namespace DevHabit.Api.Migrations.Application
                         .HasDatabaseName("ix_users_identity_id");
 
                     b.ToTable("users", "dev_habit");
+                });
+
+            modelBuilder.Entity("DevHabit.Api.Entities.GitHubPat", b =>
+                {
+                    b.HasOne("DevHabit.Api.Entities.User", null)
+                        .WithOne()
+                        .HasForeignKey("DevHabit.Api.Entities.GitHubPat", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_git_hub_pats_users_user_id");
                 });
 
             modelBuilder.Entity("DevHabit.Api.Entities.Habit", b =>

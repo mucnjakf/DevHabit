@@ -1,4 +1,6 @@
-﻿namespace DevHabit.Api.Entities;
+﻿using DevHabit.Api.Enums;
+
+namespace DevHabit.Api.Entities;
 
 public sealed class Frequency
 {
