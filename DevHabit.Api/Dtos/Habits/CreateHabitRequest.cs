@@ -3,7 +3,7 @@ using DevHabit.Api.Enums;
 
 namespace DevHabit.Api.Dtos.Habits;
 
-public sealed record CreateHabitDto
+public sealed record CreateHabitRequest
 {
     public required string Name { get; init; }
 

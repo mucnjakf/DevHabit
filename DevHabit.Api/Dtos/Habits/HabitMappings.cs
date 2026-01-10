@@ -72,62 +72,62 @@ public static class HabitMappings
         };
     }
 
-    public static Habit ToEntity(this CreateHabitDto dto, string userId)
+    public static Habit ToEntity(this CreateHabitRequest request, string userId)
     {
         return new Habit
         {
             Id = $"h_{Guid.CreateVersion7()}",
             UserId = userId,
-            Name = dto.Name,
-            Description = dto.Description,
-            Type = dto.Type,
+            Name = request.Name,
+            Description = request.Description,
+            Type = request.Type,
             Frequency = new Frequency
             {
-                Type = dto.Frequency.Type,
-                TimesPerPeriod = dto.Frequency.TimesPerPeriod
+                Type = request.Frequency.Type,
+                TimesPerPeriod = request.Frequency.TimesPerPeriod
             },
             Target = new Target
             {
-                Value = dto.Target.Value,
-                Unit = dto.Target.Unit
+                Value = request.Target.Value,
+                Unit = request.Target.Unit
             },
             Status = HabitStatus.Ongoing,
             IsArchived = false,
-            EndDate = dto.EndDate,
-            Milestone = dto.Milestone == null
+            EndDate = request.EndDate,
+            Milestone = request.Milestone == null
                 ? null
                 : new Milestone
                 {
-                    Target = dto.Milestone.Target,
-                    Current = dto.Milestone.Current
+                    Target = request.Milestone.Target,
+                    Current = request.Milestone.Current
                 },
             CreatedAtUtc = DateTime.UtcNow
         };
     }
 
-    public static void UpdateFromDto(this Habit habit, UpdateHabitDto dto)
+    public static void UpdateFromRequest(this Habit habit, UpdateHabitRequest request)
     {
-        habit.Name = dto.Name;
-        habit.Description = dto.Description;
-        habit.Type = dto.Type;
-        habit.EndDate = dto.EndDate;
+        habit.Name = request.Name;
+        habit.Description = request.Description;
+        habit.Type = request.Type;
+        habit.EndDate = request.EndDate;
 
         habit.Frequency = new Frequency
         {
-            Type = dto.Frequency.Type,
-            TimesPerPeriod = dto.Frequency.TimesPerPeriod
+            Type = request.Frequency.Type,
+            TimesPerPeriod = request.Frequency.TimesPerPeriod
         };
 
         habit.Target = new Target
         {
-            Value = dto.Target.Value,
-            Unit = dto.Target.Unit
+            Value = request.Target.Value,
+            Unit = request.Target.Unit
         };
 
-        if (dto.Milestone != null)
+        if (request.Milestone != null)
         {
             habit.Milestone ??= new Milestone();
-            habit.Milestone.Target = dto.Milestone.Target;
+            habit.Milestone.Target = request.Milestone.Target;
         }
 
         habit.UpdatedAtUtc = DateTime.UtcNow;

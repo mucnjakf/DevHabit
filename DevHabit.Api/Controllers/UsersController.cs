@@ -15,19 +15,17 @@ namespace DevHabit.Api.Controllers;
 [Route("users")]
 [ApiVersion(1.0)]
 [Authorize(Roles = Roles.Member)]
-public sealed class UsersController(DevHabitDbContext dbContext, UserContext userContext, LinkService linkService)
-    : ControllerBase
+public sealed class UsersController(
+    DevHabitDbContext dbContext,
+    UserContext userContext,
+    LinkService linkService) : ControllerBase
 {
+    // TODO: return response object
     [HttpGet("{id}")]
     [Authorize(Roles = Roles.Admin)]
     public async Task<ActionResult<UserDto>> GetUserById([FromRoute] string id)
     {
-        string? userId = await userContext.GetUserIdAsync();
-
-        if (string.IsNullOrWhiteSpace(userId))
-        {
-            return Unauthorized();
-        }
+        string userId = await userContext.GetUserIdAsync();
 
         if (id != userId)
         {
@@ -35,6 +33,7 @@ public sealed class UsersController(DevHabitDbContext dbContext, UserContext use
         }
 
         UserDto? user = await dbContext.Users
+            .AsNoTracking()
             .Where(x => x.Id == id)
             .Select(UserProjections.ProjectToDto())
             .FirstOrDefaultAsync();
@@ -47,17 +46,14 @@ public sealed class UsersController(DevHabitDbContext dbContext, UserContext use
         return Ok(user);
     }
 
+    // TODO: return response object
     [HttpGet("me")]
     public async Task<ActionResult<UserDto>> GetCurrentUser([FromHeader(Name = "Accept")] string accept)
     {
-        string? userId = await userContext.GetUserIdAsync();
-
-        if (string.IsNullOrWhiteSpace(userId))
-        {
-            return Unauthorized();
-        }
+        string userId = await userContext.GetUserIdAsync();
 
         UserDto? user = await dbContext.Users
+            .AsNoTracking()
             .Where(x => x.Id == userId)
             .Select(UserProjections.ProjectToDto())
             .FirstOrDefaultAsync();
@@ -80,14 +76,9 @@ public sealed class UsersController(DevHabitDbContext dbContext, UserContext use
     }
 
     [HttpPut("me")]
-    public async Task<ActionResult> UpdateCurrentUser([FromBody] UpdateCurrentUserDto updateCurrentUserDto)
+    public async Task<ActionResult> UpdateCurrentUser([FromBody] UpdateCurrentUserRequest updateCurrentUserRequest)
     {
-        string? userId = await userContext.GetUserIdAsync();
-
-        if (string.IsNullOrWhiteSpace(userId))
-        {
-            return Unauthorized();
-        }
+        string userId = await userContext.GetUserIdAsync();
 
         User? user = await dbContext.Users.FirstOrDefaultAsync(x => x.Id == userId);
 
@@ -96,7 +87,7 @@ public sealed class UsersController(DevHabitDbContext dbContext, UserContext use
             return NotFound();
         }
 
-        user.Name = updateCurrentUserDto.Name;
+        user.Name = updateCurrentUserRequest.Name;
         user.UpdatedAtUtc = DateTime.UtcNow;
 
         await dbContext.SaveChangesAsync();

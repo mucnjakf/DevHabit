@@ -2,9 +2,9 @@
 
 namespace DevHabit.Api.Dtos.HabitTags;
 
-public sealed class UpsertHabitTagsDtoValidator : AbstractValidator<UpsertHabitTagsDto>
+public sealed class UpsertHabitTagsRequestValidator : AbstractValidator<UpsertHabitTagsRequest>
 {
-    public UpsertHabitTagsDtoValidator()
+    public UpsertHabitTagsRequestValidator()
     {
         RuleFor(x => x.TagIds)
             .NotEmpty()

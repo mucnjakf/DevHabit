@@ -1,9 +1,8 @@
-﻿using DevHabit.Api.Entities;
-using DevHabit.Api.Enums;
+﻿using DevHabit.Api.Enums;
 
 namespace DevHabit.Api.Dtos.Habits;
 
-public sealed record UpdateHabitDto
+public sealed record UpdateHabitRequest
 {
     public required string Name { get; init; }
 

@@ -1,6 +1,6 @@
 ﻿namespace DevHabit.Api.Dtos.Tags;
 
-public sealed record UpdateTagDto
+public sealed record CreateTagRequest
 {
     public required string Name { get; init; }
 

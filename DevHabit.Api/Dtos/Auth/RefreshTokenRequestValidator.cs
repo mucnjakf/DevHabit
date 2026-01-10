@@ -2,9 +2,9 @@
 
 namespace DevHabit.Api.Dtos.Auth;
 
-public sealed class RefreshTokenDtoValidator : AbstractValidator<RefreshTokenDto>
+public sealed class RefreshTokenRequestValidator : AbstractValidator<RefreshTokenRequest>
 {
-    public RefreshTokenDtoValidator()
+    public RefreshTokenRequestValidator()
     {
         RuleFor(x => x.Value)
             .NotEmpty()

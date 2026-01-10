@@ -22,17 +22,12 @@ public sealed class HabitTagsController(DevHabitDbContext dbContext, UserContext
     [HttpPut]
     public async Task<ActionResult> UpsertHabitTags(
         [FromRoute] string habitId,
-        [FromBody] UpsertHabitTagsDto upsertHabitTagsDto,
-        [FromServices] IValidator<UpsertHabitTagsDto> validator)
+        [FromBody] UpsertHabitTagsRequest upsertHabitTagsRequest,
+        [FromServices] IValidator<UpsertHabitTagsRequest> validator)
     {
-        await validator.ValidateAndThrowAsync(upsertHabitTagsDto);
+        await validator.ValidateAndThrowAsync(upsertHabitTagsRequest);
 
-        string? userId = await userContext.GetUserIdAsync();
-
-        if (string.IsNullOrWhiteSpace(userId))
-        {
-            return Unauthorized();
-        }
+        string userId = await userContext.GetUserIdAsync();
 
         Habit? habit = await dbContext.Habits
             .Where(x => x.UserId == userId)
@@ -46,24 +41,24 @@ public sealed class HabitTagsController(DevHabitDbContext dbContext, UserContext
 
         var currentTagIds = habit.HabitTags.Select(x => x.TagId).ToHashSet();
 
-        if (currentTagIds.SetEquals(upsertHabitTagsDto.TagIds))
+        if (currentTagIds.SetEquals(upsertHabitTagsRequest.TagIds))
         {
             return NoContent();
         }
 
         List<string> existingTagIds = await dbContext.Tags
-            .Where(x => upsertHabitTagsDto.TagIds.Contains(x.Id) && x.UserId == userId)
+            .Where(x => upsertHabitTagsRequest.TagIds.Contains(x.Id) && x.UserId == userId)
             .Select(x => x.Id)
             .ToListAsync();
 
-        if (existingTagIds.Count != upsertHabitTagsDto.TagIds.Count)
+        if (existingTagIds.Count != upsertHabitTagsRequest.TagIds.Count)
         {
             return BadRequest("One or more tag IDs is invalid");
         }
 
-        habit.HabitTags.RemoveAll(x => !upsertHabitTagsDto.TagIds.Contains(x.TagId));
+        habit.HabitTags.RemoveAll(x => !upsertHabitTagsRequest.TagIds.Contains(x.TagId));
 
-        string[] tagIdsToAdd = upsertHabitTagsDto.TagIds.Except(currentTagIds).ToArray();
+        string[] tagIdsToAdd = upsertHabitTagsRequest.TagIds.Except(currentTagIds).ToArray();
 
         habit.HabitTags.AddRange(tagIdsToAdd.Select(tagId => new HabitTag
         {
@@ -80,15 +75,15 @@ public sealed class HabitTagsController(DevHabitDbContext dbContext, UserContext
     [HttpDelete("{tagId}")]
     public async Task<ActionResult> DeleteHabitTag([FromRoute] string habitId, [FromRoute] string tagId)
     {
-        string? userId = await userContext.GetUserIdAsync();
+        string userId = await userContext.GetUserIdAsync();
 
-        if (string.IsNullOrWhiteSpace(userId))
-        {
-            return Unauthorized();
-        }
+        bool habitExists = await dbContext.Habits
+            .AsNoTracking()
+            .AnyAsync(x => x.Id == habitId && x.UserId == userId);
 
-        bool habitExists = await dbContext.Habits.AnyAsync(x => x.Id == habitId && x.UserId == userId);
-        bool tagExists = await dbContext.Tags.AnyAsync(x => x.Id == tagId && x.UserId == userId);
+        bool tagExists = await dbContext.Tags
+            .AsNoTracking()
+            .AnyAsync(x => x.Id == tagId && x.UserId == userId);
 
         if (!habitExists || !tagExists)
         {

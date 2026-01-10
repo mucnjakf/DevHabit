@@ -1,6 +1,6 @@
 ﻿namespace DevHabit.Api.Dtos.Auth;
 
-public sealed record GetTokenDto
+public sealed record CreateTokenDto
 {
     public required string UserId { get; init; }
 

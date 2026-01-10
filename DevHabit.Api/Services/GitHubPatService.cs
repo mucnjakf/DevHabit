@@ -9,17 +9,17 @@ public sealed class GitHubPatService(DevHabitDbContext dbContext, EncryptionServ
 {
     public async Task StoreAsync(
         string userId,
-        StoreGitHubPatDto storeGitHubPatDto,
+        StoreGitHubPatRequest storeGitHubPatRequest,
         CancellationToken cancellationToken = default)
     {
         GitHubPat? existingGitHubPat = await GetGitHubPatAsync(userId, cancellationToken);
 
-        string encryptedGitHubPat = encryptionService.Encrypt(storeGitHubPatDto.Pat);
+        string encryptedGitHubPat = encryptionService.Encrypt(storeGitHubPatRequest.Pat);
 
         if (existingGitHubPat is not null)
         {
             existingGitHubPat.Token = encryptedGitHubPat;
-            existingGitHubPat.ExpiresAtUtc = DateTime.UtcNow.AddDays(storeGitHubPatDto.ExpiresInDays);
+            existingGitHubPat.ExpiresAtUtc = DateTime.UtcNow.AddDays(storeGitHubPatRequest.ExpiresInDays);
         }
         else
         {
@@ -28,7 +28,7 @@ public sealed class GitHubPatService(DevHabitDbContext dbContext, EncryptionServ
                 Id = $"gh_{Guid.CreateVersion7()}",
                 UserId = userId,
                 Token = encryptedGitHubPat,
-                ExpiresAtUtc = DateTime.UtcNow.AddDays(storeGitHubPatDto.ExpiresInDays),
+                ExpiresAtUtc = DateTime.UtcNow.AddDays(storeGitHubPatRequest.ExpiresInDays),
                 CreatedAtUtc = DateTime.UtcNow
             }, cancellationToken);
 

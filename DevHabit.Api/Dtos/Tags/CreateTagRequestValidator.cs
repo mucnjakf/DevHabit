@@ -2,9 +2,9 @@
 
 namespace DevHabit.Api.Dtos.Tags;
 
-public sealed class UpdateTagDtoValidator : AbstractValidator<UpdateTagDto>
+public sealed class CreateTagRequestValidator : AbstractValidator<CreateTagRequest>
 {
-    public UpdateTagDtoValidator()
+    public CreateTagRequestValidator()
     {
         RuleFor(x => x.Name).NotEmpty().MinimumLength(3);
 

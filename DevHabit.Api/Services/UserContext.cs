@@ -16,7 +16,7 @@ public sealed class UserContext(
 
     public async Task<string?> GetUserIdAsync(CancellationToken cancellationToken = default)
     {
-        string? identityId = httpContextAccessor.HttpContext?.User.GetIdentityId();
+        string identityId = httpContextAccessor.HttpContext?.User.GetIdentityId();
 
         if (identityId is null)
         {

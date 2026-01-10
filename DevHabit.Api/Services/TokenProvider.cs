@@ -11,25 +11,25 @@ namespace DevHabit.Api.Services;
 
 public sealed class TokenProvider(IOptions<JwtAuthOptions> jwtAuthOptions)
 {
-    public TokenDto Create(GetTokenDto getTokenDto)
+    public TokenDto Create(CreateTokenDto createTokenDto)
     {
         return new TokenDto
         {
-            AccessToken = GenerateAccessToken(getTokenDto),
+            AccessToken = GenerateAccessToken(createTokenDto),
             RefreshToken = GenerateRefreshToken()
         };
     }
 
-    private string GenerateAccessToken(GetTokenDto getTokenDto)
+    private string GenerateAccessToken(CreateTokenDto createTokenDto)
     {
         var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtAuthOptions.Value.Key));
         var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
 
         List<Claim> claims =
         [
-            new(JwtRegisteredClaimNames.Sub, getTokenDto.UserId),
-            new(JwtRegisteredClaimNames.Email, getTokenDto.Email),
-            ..getTokenDto.Roles.Select(x => new Claim(ClaimTypes.Role, x))
+            new(JwtRegisteredClaimNames.Sub, createTokenDto.UserId),
+            new(JwtRegisteredClaimNames.Email, createTokenDto.Email),
+            ..createTokenDto.Roles.Select(x => new Claim(ClaimTypes.Role, x))
         ];
 
         var securityTokenDescriptor = new SecurityTokenDescriptor

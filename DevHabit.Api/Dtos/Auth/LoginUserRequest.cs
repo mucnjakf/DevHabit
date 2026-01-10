@@ -1,6 +1,6 @@
 ﻿namespace DevHabit.Api.Dtos.Auth;
 
-public sealed record LoginUserDto
+public sealed record LoginUserRequest
 {
     public required string Email { get; init; }
 

@@ -5,13 +5,13 @@ namespace DevHabit.Api.Dtos.Users;
 
 public static class UserMappings
 {
-    public static User ToEntity(this RegisterUserDto dto)
+    public static User ToEntity(this RegisterUserRequest request)
     {
         return new User
         {
             Id = $"u_{Guid.CreateVersion7()}",
-            Name = dto.Name,
-            Email = dto.Email,
+            Name = request.Name,
+            Email = request.Email,
             CreatedAtUtc = DateTime.UtcNow
         };
     }

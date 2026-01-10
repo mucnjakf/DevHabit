@@ -1,17 +1,16 @@
-﻿using DevHabit.Api.Entities;
-using DevHabit.Api.Enums;
+﻿using DevHabit.Api.Enums;
 using FluentValidation;
 
 namespace DevHabit.Api.Dtos.Habits;
 
-public sealed class CreateHabitDtoValidator : AbstractValidator<CreateHabitDto>
+public sealed class CreateHabitRequestValidator : AbstractValidator<CreateHabitRequest>
 {
     private static readonly string[] AllowedUnits =
         ["minutes", "hours", "steps", "km", "cal", "pages", "books", "tasks", "sessions"];
 
     private static readonly string[] AllowedUnitsForBinaryHabits = ["sessions", "tasks"];
 
-    public CreateHabitDtoValidator()
+    public CreateHabitRequestValidator()
     {
         RuleFor(x => x.Name)
             .NotEmpty()

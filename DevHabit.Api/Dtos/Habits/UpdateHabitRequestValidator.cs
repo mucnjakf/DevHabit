@@ -4,14 +4,14 @@ using FluentValidation;
 
 namespace DevHabit.Api.Dtos.Habits;
 
-public sealed class UpdateHabitDtoValidator : AbstractValidator<UpdateHabitDto>
+public sealed class UpdateHabitRequestValidator : AbstractValidator<UpdateHabitRequest>
 {
     private static readonly string[] AllowedUnits =
         ["minutes", "hours", "steps", "km", "cal", "pages", "books", "tasks", "sessions"];
 
     private static readonly string[] AllowedUnitsForBinaryHabits = ["sessions", "tasks"];
 
-    public UpdateHabitDtoValidator()
+    public UpdateHabitRequestValidator()
     {
         RuleFor(x => x.Name)
             .NotEmpty()

@@ -27,12 +27,13 @@ public sealed class AuthController(
     TokenProvider tokenProvider,
     IOptions<JwtAuthOptions> jwtAuthOptions) : ControllerBase
 {
+    // TODO: return response object
     [HttpPost("register")]
     public async Task<ActionResult<TokenDto>> Register(
-        [FromBody] RegisterUserDto registerUserDto,
-        [FromServices] IValidator<RegisterUserDto> validator)
+        [FromBody] RegisterUserRequest registerUserRequest,
+        [FromServices] IValidator<RegisterUserRequest> validator)
     {
-        await validator.ValidateAndThrowAsync(registerUserDto);
+        await validator.ValidateAndThrowAsync(registerUserRequest);
 
         await using IDbContextTransaction transaction =
             await devHabitIdentityDbContext.Database.BeginTransactionAsync();
@@ -43,18 +44,21 @@ public sealed class AuthController(
 
         var identityUser = new IdentityUser
         {
-            Email = registerUserDto.Email,
-            UserName = registerUserDto.Email
+            Email = registerUserRequest.Email,
+            UserName = registerUserRequest.Email
         };
 
-        IdentityResult userIdentityResult = await userManager.CreateAsync(identityUser, registerUserDto.Password);
+        IdentityResult userIdentityResult = await userManager.CreateAsync(identityUser, registerUserRequest.Password);
 
         if (!userIdentityResult.Succeeded)
         {
-            return Problem(statusCode: StatusCodes.Status400BadRequest, detail: "Unable to register user",
+            return Problem(
+                statusCode: StatusCodes.Status400BadRequest,
+                detail: "Unable to register user",
                 extensions: new Dictionary<string, object?>
                 {
-                    { "errors", userIdentityResult.Errors.ToDictionary(x => x.Code, x => x.Description) }
+                    { "errors", userIdentityResult.Errors
+                        .ToDictionary(x => x.Code, x => x.Description) }
                 });
         }
 
@@ -62,20 +66,23 @@ public sealed class AuthController(
 
         if (!roleIdentityResult.Succeeded)
         {
-            return Problem(statusCode: StatusCodes.Status400BadRequest, detail: "Unable to register user",
+            return Problem(
+                statusCode: StatusCodes.Status400BadRequest,
+                detail: "Unable to register user",
                 extensions: new Dictionary<string, object?>
                 {
-                    { "errors", roleIdentityResult.Errors.ToDictionary(x => x.Code, x => x.Description) }
+                    { "errors", roleIdentityResult.Errors
+                        .ToDictionary(x => x.Code, x => x.Description) }
                 });
         }
 
-        User user = registerUserDto.ToEntity();
+        User user = registerUserRequest.ToEntity();
         user.IdentityId = identityUser.Id;
 
         await devHabitDbContext.Users.AddAsync(user);
         await devHabitDbContext.SaveChangesAsync();
 
-        TokenDto token = tokenProvider.Create(new GetTokenDto
+        TokenDto token = tokenProvider.Create(new CreateTokenDto
         {
             UserId = identityUser.Id,
             Email = identityUser.Email,
@@ -98,23 +105,24 @@ public sealed class AuthController(
         return Ok(token);
     }
 
+    // TODO: return response object
     [HttpPost("login")]
     public async Task<ActionResult<TokenDto>> Login(
-        [FromBody] LoginUserDto loginUserDto,
-        [FromServices] IValidator<LoginUserDto> validator)
+        [FromBody] LoginUserRequest loginUserRequest,
+        [FromServices] IValidator<LoginUserRequest> validator)
     {
-        await validator.ValidateAndThrowAsync(loginUserDto);
+        await validator.ValidateAndThrowAsync(loginUserRequest);
 
-        IdentityUser? identityUser = await userManager.FindByEmailAsync(loginUserDto.Email);
+        IdentityUser? identityUser = await userManager.FindByEmailAsync(loginUserRequest.Email);
 
-        if (identityUser is null || !await userManager.CheckPasswordAsync(identityUser, loginUserDto.Password))
+        if (identityUser is null || !await userManager.CheckPasswordAsync(identityUser, loginUserRequest.Password))
         {
             return Unauthorized();
         }
 
         IList<string> roles = await userManager.GetRolesAsync(identityUser);
 
-        TokenDto token = tokenProvider.Create(new GetTokenDto
+        TokenDto token = tokenProvider.Create(new CreateTokenDto
         {
             UserId = identityUser.Id,
             Email = identityUser.Email!,
@@ -135,16 +143,17 @@ public sealed class AuthController(
         return Ok(token);
     }
 
+    // TODO: return response object
     [HttpPost("refresh")]
     public async Task<ActionResult<TokenDto>> Refresh(
-        [FromBody] RefreshTokenDto refreshTokenDto,
-        [FromServices] IValidator<RefreshTokenDto> validator)
+        [FromBody] RefreshTokenRequest refreshTokenRequest,
+        [FromServices] IValidator<RefreshTokenRequest> validator)
     {
-        await validator.ValidateAndThrowAsync(refreshTokenDto);
+        await validator.ValidateAndThrowAsync(refreshTokenRequest);
 
         RefreshToken? refreshToken = await devHabitIdentityDbContext.RefreshTokens
             .Include(x => x.User)
-            .FirstOrDefaultAsync(x => x.Value == refreshTokenDto.Value);
+            .FirstOrDefaultAsync(x => x.Value == refreshTokenRequest.Value);
 
         if (refreshToken is null || refreshToken.ExpiresAtUtc < DateTime.UtcNow)
         {
@@ -153,7 +162,7 @@ public sealed class AuthController(
 
         IList<string> roles = await userManager.GetRolesAsync(refreshToken.User);
 
-        TokenDto token = tokenProvider.Create(new GetTokenDto
+        TokenDto token = tokenProvider.Create(new CreateTokenDto
         {
             UserId = refreshToken.User.Id,
             Email = refreshToken.User.Email!,

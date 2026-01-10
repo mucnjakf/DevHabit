@@ -7,10 +7,8 @@ using DevHabit.Api.Entities;
 using DevHabit.Api.Services;
 using DevHabit.Api.Services.Hateoas;
 using FluentValidation;
-using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 namespace DevHabit.Api.Controllers;
@@ -24,17 +22,14 @@ public sealed class TagsController(
     LinkService linkService,
     UserContext userContext) : ControllerBase
 {
+    // TODO: return response object
     [HttpGet]
     public async Task<ActionResult<TagsCollectionDto>> GetTags([FromHeader] string? accept)
     {
-        string? userId = await userContext.GetUserIdAsync();
-
-        if (string.IsNullOrWhiteSpace(userId))
-        {
-            return Unauthorized();
-        }
+        string userId = await userContext.GetUserIdAsync();
 
         List<TagDto> tags = await dbContext.Tags
+            .AsNoTracking()
             .Where(x => x.UserId == userId)
             .Select(TagProjections.ProjectToDto())
             .ToListAsync();
@@ -52,17 +47,14 @@ public sealed class TagsController(
         return Ok(habitsCollectionDto);
     }
 
+    // TODO: return response object
     [HttpGet("{id}")]
     public async Task<ActionResult<TagDto>> GetTag([FromRoute] string id, [FromHeader] string? accept)
     {
         string? userId = await userContext.GetUserIdAsync();
 
-        if (string.IsNullOrWhiteSpace(userId))
-        {
-            return Unauthorized();
-        }
-
         TagDto? tag = await dbContext.Tags
+            .AsNoTracking()
             .Where(x => x.Id == id && x.UserId == userId)
             .Select(TagProjections.ProjectToDto())
             .FirstOrDefaultAsync();
@@ -80,25 +72,23 @@ public sealed class TagsController(
         return Ok(tag);
     }
 
+    // TODO: return response object
     [HttpPost]
     public async Task<ActionResult<TagDto>> CreateTag(
-        [FromBody] CreateTagDto createTagDto,
-        [FromServices] IValidator<CreateTagDto> validator)
+        [FromBody] CreateTagRequest createTagRequest,
+        [FromServices] IValidator<CreateTagRequest> validator)
     {
-        await validator.ValidateAndThrowAsync(createTagDto);
+        await validator.ValidateAndThrowAsync(createTagRequest);
 
-        string? userId = await userContext.GetUserIdAsync();
+        string userId = await userContext.GetUserIdAsync();
 
-        if (string.IsNullOrWhiteSpace(userId))
-        {
-            return Unauthorized();
-        }
-
-        Tag tag = createTagDto.ToEntity(userId);
+        Tag tag = createTagRequest.ToEntity(userId!);
 
         if (await dbContext.Tags.AnyAsync(x => x.Name == tag.Name))
         {
-            return Problem(statusCode: StatusCodes.Status409Conflict, detail: $"The tag '{tag.Name}' already exists");
+            return Problem(
+                statusCode: StatusCodes.Status409Conflict,
+                detail: $"The tag '{tag.Name}' already exists");
         }
 
         dbContext.Tags.Add(tag);
@@ -113,17 +103,12 @@ public sealed class TagsController(
     [HttpPut("{id}")]
     public async Task<ActionResult> UpdateTag(
         [FromRoute] string id,
-        [FromBody] UpdateTagDto updateTagDto,
-        [FromServices] IValidator<UpdateTagDto> validator)
+        [FromBody] UpdateTagRequest updateTagRequest,
+        [FromServices] IValidator<UpdateTagRequest> validator)
     {
-        await validator.ValidateAndThrowAsync(updateTagDto);
+        await validator.ValidateAndThrowAsync(updateTagRequest);
 
-        string? userId = await userContext.GetUserIdAsync();
-
-        if (string.IsNullOrWhiteSpace(userId))
-        {
-            return Unauthorized();
-        }
+        string userId = await userContext.GetUserIdAsync();
 
         Tag? tag = await dbContext.Tags.FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
 
@@ -132,7 +117,7 @@ public sealed class TagsController(
             return NotFound();
         }
 
-        tag.UpdateFromDto(updateTagDto);
+        tag.UpdateFromRequest(updateTagRequest);
 
         await dbContext.SaveChangesAsync();
 
@@ -142,12 +127,7 @@ public sealed class TagsController(
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteTag([FromRoute] string id)
     {
-        string? userId = await userContext.GetUserIdAsync();
-
-        if (string.IsNullOrWhiteSpace(userId))
-        {
-            return Unauthorized();
-        }
+        string userId = await userContext.GetUserIdAsync();
 
         Tag? tag = await dbContext.Tags.FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
 

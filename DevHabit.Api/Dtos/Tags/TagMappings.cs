@@ -16,22 +16,22 @@ public static class TagMappings
         };
     }
 
-    public static Tag ToEntity(this CreateTagDto dto, string userId)
+    public static Tag ToEntity(this CreateTagRequest request, string userId)
     {
         return new Tag
         {
             Id = $"t_{Guid.CreateVersion7()}",
             UserId = userId,
-            Name = dto.Name,
-            Description = dto.Description,
+            Name = request.Name,
+            Description = request.Description,
             CreatedAtUtc = DateTime.UtcNow
         };
     }
 
-    public static void UpdateFromDto(this Tag tag, UpdateTagDto dto)
+    public static void UpdateFromRequest(this Tag tag, UpdateTagRequest request)
     {
-        tag.Name = dto.Name;
-        tag.Description = dto.Description;
+        tag.Name = request.Name;
+        tag.Description = request.Description;
         tag.UpdatedAtUtc = DateTime.UtcNow;
     }
 }

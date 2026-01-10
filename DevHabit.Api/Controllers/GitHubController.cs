@@ -1,7 +1,6 @@
 ﻿using Asp.Versioning;
 using DevHabit.Api.Constants;
 using DevHabit.Api.Dtos.GitHub;
-using DevHabit.Api.Entities;
 using DevHabit.Api.Services;
 using DevHabit.Api.Services.Hateoas;
 using FluentValidation;
@@ -21,51 +20,37 @@ public sealed class GitHubController(
     LinkService linkService) : ControllerBase
 {
     [HttpPut("personal-access-token")]
-    public async Task<IActionResult> StoreAccessToken(
-        [FromBody] StoreGitHubPatDto storeGitHubPatDto,
-        [FromServices] IValidator<StoreGitHubPatDto> validator)
+    public async Task<ActionResult> StoreAccessToken(
+        [FromBody] StoreGitHubPatRequest storeGitHubPatRequest,
+        [FromServices] IValidator<StoreGitHubPatRequest> validator)
     {
-        await validator.ValidateAndThrowAsync(storeGitHubPatDto);
+        await validator.ValidateAndThrowAsync(storeGitHubPatRequest);
 
-        string? userId = await userContext.GetUserIdAsync();
+        string userId = await userContext.GetUserIdAsync();
 
-        if (string.IsNullOrWhiteSpace(userId))
-        {
-            return Unauthorized();
-        }
-
-        await gitHubPatService.StoreAsync(userId, storeGitHubPatDto);
+        await gitHubPatService.StoreAsync(userId!, storeGitHubPatRequest);
 
         return NoContent();
     }
 
     [HttpDelete("personal-access-token")]
-    public async Task<IActionResult> RevokeAccessToken()
+    public async Task<ActionResult> RevokeAccessToken()
     {
-        string? userId = await userContext.GetUserIdAsync();
+        string userId = await userContext.GetUserIdAsync();
 
-        if (string.IsNullOrWhiteSpace(userId))
-        {
-            return Unauthorized();
-        }
-
-        await gitHubPatService.RevokeAsync(userId);
+        await gitHubPatService.RevokeAsync(userId!);
 
         return NoContent();
     }
 
+    // TODO: return response object
     [HttpGet("profile")]
     public async Task<ActionResult<GitHubUserProfileDto>> GetUserProfile(
         [FromHeader(Name = "Accept")] string? accept)
     {
-        string? userId = await userContext.GetUserIdAsync();
+        string userId = await userContext.GetUserIdAsync();
 
-        if (string.IsNullOrWhiteSpace(userId))
-        {
-            return Unauthorized();
-        }
-
-        string? gitHubPat = await gitHubPatService.GetAsync(userId);
+        string? gitHubPat = await gitHubPatService.GetAsync(userId!);
 
         if (string.IsNullOrWhiteSpace(gitHubPat))
         {

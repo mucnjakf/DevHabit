@@ -1,6 +1,6 @@
 ﻿namespace DevHabit.Api.Dtos.GitHub;
 
-public sealed record StoreGitHubPatDto
+public sealed record StoreGitHubPatRequest
 {
     public required string Pat { get; init; }
 

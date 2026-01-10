@@ -2,9 +2,9 @@
 
 namespace DevHabit.Api.Dtos.GitHub;
 
-public sealed class StoreGitHubPatDtoValidator : AbstractValidator<StoreGitHubPatDto>
+public sealed class StoreGitHubPatRequestValidator : AbstractValidator<StoreGitHubPatRequest>
 {
-    public StoreGitHubPatDtoValidator()
+    public StoreGitHubPatRequestValidator()
     {
         RuleFor(x => x.Pat)
             .NotEmpty()

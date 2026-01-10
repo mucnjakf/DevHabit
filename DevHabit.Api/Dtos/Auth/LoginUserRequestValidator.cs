@@ -2,9 +2,9 @@
 
 namespace DevHabit.Api.Dtos.Auth;
 
-public sealed class LoginUserDtoValidator : AbstractValidator<LoginUserDto>
+public sealed class LoginUserRequestValidator : AbstractValidator<LoginUserRequest>
 {
-    public LoginUserDtoValidator()
+    public LoginUserRequestValidator()
     {
         RuleFor(x => x.Email)
             .NotEmpty()
