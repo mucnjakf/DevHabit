@@ -5,7 +5,6 @@ using DevHabit.Api.Dtos.Common;
 using DevHabit.Api.Dtos.Tags;
 using DevHabit.Api.Entities;
 using DevHabit.Api.Services;
-using DevHabit.Api.Services.Hateoas;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,32 +21,51 @@ public sealed class TagsController(
     LinkService linkService,
     UserContext userContext) : ControllerBase
 {
-    // TODO: return response object
     [HttpGet]
-    public async Task<ActionResult<TagsCollectionDto>> GetTags([FromHeader] string? accept)
+    public async Task<ActionResult<PaginationDto<TagDto>>> GetTags(
+        [FromHeader] string? accept,
+        [FromQuery] TagsQueryParameters parameters)
     {
         string userId = await userContext.GetUserIdAsync();
 
-        List<TagDto> tags = await dbContext.Tags
+        IQueryable<TagDto> query = dbContext.Tags
             .AsNoTracking()
             .Where(x => x.UserId == userId)
-            .Select(TagProjections.ProjectToDto())
+            .Select(TagProjections.ProjectToDto());
+
+        int totalCount = await query.CountAsync();
+
+        List<TagDto> tags = await query
+            .Skip((parameters.Page - 1) * parameters.PageSize)
+            .Take(parameters.PageSize)
             .ToListAsync();
 
-        var habitsCollectionDto = new TagsCollectionDto
-        {
-            Items = tags
-        };
+        bool includeLinks = accept is VendorMediaTypeNames.Application.HateoasJson;
 
-        if (accept is VendorMediaTypeNames.Application.HateoasJson)
+        if (includeLinks)
         {
-            habitsCollectionDto.Links = CreateLinksForTags();
+            tags.ForEach(x => x.Links = CreateLinksForTag(x.Id));
         }
 
-        return Ok(habitsCollectionDto);
+        var paginationDto = new PaginationDto<TagDto>
+        {
+            Items = tags,
+            Page = parameters.Page,
+            PageSize = parameters.PageSize,
+            TotalCount = totalCount
+        };
+
+        if (includeLinks)
+        {
+            paginationDto.Links = CreateLinksForTags(
+                parameters,
+                paginationDto.HasNextPage,
+                paginationDto.HasPreviousPage);
+        }
+
+        return Ok(paginationDto);
     }
 
-    // TODO: return response object
     [HttpGet("{id}")]
     public async Task<ActionResult<TagDto>> GetTag([FromRoute] string id, [FromHeader] string? accept)
     {
@@ -72,7 +90,6 @@ public sealed class TagsController(
         return Ok(tag);
     }
 
-    // TODO: return response object
     [HttpPost]
     public async Task<ActionResult<TagDto>> CreateTag(
         [FromBody] CreateTagRequest createTagRequest,
@@ -96,6 +113,7 @@ public sealed class TagsController(
         await dbContext.SaveChangesAsync();
 
         TagDto tagDto = tag.ToDto();
+        tagDto.Links = CreateLinksForTag(tagDto.Id);
 
         return CreatedAtAction(nameof(GetTag), new { id = tagDto.Id }, tagDto);
     }
@@ -143,13 +161,37 @@ public sealed class TagsController(
         return NoContent();
     }
 
-    private List<LinkDto> CreateLinksForTags()
+    private List<LinkDto> CreateLinksForTags(TagsQueryParameters parameters, bool hasNextPage, bool hasPreviousPage)
     {
-        return
+        List<LinkDto> links =
         [
-            linkService.Create(nameof(GetTags), "self", HttpMethods.Get),
+            linkService.Create(nameof(GetTags), "self", HttpMethods.Get, new
+            {
+                page = parameters.Page,
+                pageSize = parameters.PageSize
+            }),
             linkService.Create(nameof(CreateTag), "create", HttpMethods.Post),
         ];
+
+        if (hasNextPage)
+        {
+            links.Add(linkService.Create(nameof(GetTags), "next-page", HttpMethods.Get, new
+            {
+                page = parameters.Page + 1,
+                pageSize = parameters.PageSize
+            }));
+        }
+
+        if (hasPreviousPage)
+        {
+            links.Add(linkService.Create(nameof(GetTags), "previous-page", HttpMethods.Get, new
+            {
+                page = parameters.Page - 1,
+                pageSize = parameters.PageSize
+            }));
+        }
+
+        return links;
     }
 
     private List<LinkDto> CreateLinksForTag(string id)

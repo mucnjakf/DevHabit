@@ -8,7 +8,6 @@ using DevHabit.Api.Entities;
 using DevHabit.Api.Middleware;
 using DevHabit.Api.Options;
 using DevHabit.Api.Services;
-using DevHabit.Api.Services.Hateoas;
 using DevHabit.Api.Services.Sorting;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

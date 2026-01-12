@@ -1,6 +1,7 @@
 ﻿### Get a list of tags
 
 GET {{hostAddress}}/tags
+# Accept: application/vnd.dev-habit.hateoas+json
 Accept: application/json
 Authorization: Bearer {{accessToken}}
 
@@ -10,6 +11,7 @@ Authorization: Bearer {{accessToken}}
     request.variables.set("id", "t_019b8656-0745-77f2-a5b2-c3cbbdb38125")
 %}
 GET {{hostAddress}}/tags/{{id}}
+# Accept: application/vnd.dev-habit.hateoas+json
 Accept: application/json
 Authorization: Bearer {{accessToken}}
 

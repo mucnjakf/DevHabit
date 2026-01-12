@@ -27,7 +27,6 @@ public sealed class AuthController(
     TokenProvider tokenProvider,
     IOptions<JwtAuthOptions> jwtAuthOptions) : ControllerBase
 {
-    // TODO: return response object
     [HttpPost("register")]
     public async Task<ActionResult<TokenDto>> Register(
         [FromBody] RegisterUserRequest registerUserRequest,
@@ -105,7 +104,6 @@ public sealed class AuthController(
         return Ok(token);
     }
 
-    // TODO: return response object
     [HttpPost("login")]
     public async Task<ActionResult<TokenDto>> Login(
         [FromBody] LoginUserRequest loginUserRequest,
@@ -143,7 +141,6 @@ public sealed class AuthController(
         return Ok(token);
     }
 
-    // TODO: return response object
     [HttpPost("refresh")]
     public async Task<ActionResult<TokenDto>> Refresh(
         [FromBody] RefreshTokenRequest refreshTokenRequest,

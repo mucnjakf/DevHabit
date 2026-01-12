@@ -29,8 +29,20 @@ Accept: application/json
 %}
 GET {{hostAddress}}/habits/{{id}}?fields={{fields}}
 # Accept: application/vnd.dev-habit.hateoas+json
-Authorization: Bearer {{accessToken}}
 Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+### Get habit by ID v2
+
+< {%
+    request.variables.set("id", "h_019b95a1-dca5-77ab-8397-af00c432ebd6")
+    request.variables.set("fields", "")
+%}
+GET {{hostAddress}}/habits/{{id}}?fields={{fields}}
+# Accept: application/vnd.dev-habit.hateoas+json
+Accept: application/json;v=2
+Authorization: Bearer {{accessToken}}
+
 
 ### Create habit
 

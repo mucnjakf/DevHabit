@@ -19,5 +19,6 @@ Authorization: Bearer {{accessToken}}
 ### Get profile
 
 GET {{hostAddress}}/github/profile
+# Accept: application/vnd.dev-habit.hateoas+json
 Accept: application/json
 Authorization: Bearer {{accessToken}}

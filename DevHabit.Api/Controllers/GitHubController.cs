@@ -2,7 +2,6 @@
 using DevHabit.Api.Constants;
 using DevHabit.Api.Dtos.GitHub;
 using DevHabit.Api.Services;
-using DevHabit.Api.Services.Hateoas;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -43,7 +42,6 @@ public sealed class GitHubController(
         return NoContent();
     }
 
-    // TODO: return response object
     [HttpGet("profile")]
     public async Task<ActionResult<GitHubUserProfileDto>> GetUserProfile(
         [FromHeader(Name = "Accept")] string? accept)

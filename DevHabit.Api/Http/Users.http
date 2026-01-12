@@ -1,4 +1,4 @@
-﻿### Get user
+﻿### Get user by ID
 
 < {%
     request.variables.set("id", "u_019b8efc-dad3-7eff-a395-ca39d9d330f1")
@@ -10,6 +10,7 @@ Authorization: Bearer {{accessToken}}
 ### Get current user
 
 GET {{hostAddress}}/users/me
+# Accept: application/vnd.dev-habit.hateoas+json
 Accept: application/json
 Authorization: Bearer {{accessToken}}
 

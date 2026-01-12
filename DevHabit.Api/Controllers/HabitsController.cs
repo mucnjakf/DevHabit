@@ -7,7 +7,6 @@ using DevHabit.Api.Dtos.Habits;
 using DevHabit.Api.Entities;
 using DevHabit.Api.Extensions;
 using DevHabit.Api.Services;
-using DevHabit.Api.Services.Hateoas;
 using DevHabit.Api.Services.Sorting;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
@@ -74,7 +73,7 @@ public sealed class HabitsController(
 
         bool includeLinks = accept is VendorMediaTypeNames.Application.HateoasJson;
 
-        var paginationResult = new PaginationDto<ExpandoObject>
+        var paginationDto = new PaginationDto<ExpandoObject>
         {
             Items = dataShapingService.ShapeCollectionData(
                 habits,
@@ -87,13 +86,13 @@ public sealed class HabitsController(
 
         if (includeLinks)
         {
-            paginationResult.Links = CreateLinksForHabits(
+            paginationDto.Links = CreateLinksForHabits(
                 parameters,
-                paginationResult.HasNextPage,
-                paginationResult.HasPreviousPage);
+                paginationDto.HasNextPage,
+                paginationDto.HasPreviousPage);
         }
 
-        return Ok(paginationResult);
+        return Ok(paginationDto);
     }
 
     [HttpGet("{id}")]
@@ -176,7 +175,6 @@ public sealed class HabitsController(
         return Ok(shapedHabitDto);
     }
 
-    // TODO: return response object
     [HttpPost]
     public async Task<ActionResult<HabitDto>> CreateHabit(
         [FromBody] CreateHabitRequest createHabitRequest,
@@ -282,7 +280,7 @@ public sealed class HabitsController(
                 page = parameters.Page,
                 pageSize = parameters.PageSize,
                 fields = parameters.Fields,
-                q = parameters.Search,
+                search = parameters.Search,
                 sort = parameters.Sort,
                 type = parameters.Type,
                 status = parameters.Status
@@ -297,7 +295,7 @@ public sealed class HabitsController(
                 page = parameters.Page + 1,
                 pageSize = parameters.PageSize,
                 fields = parameters.Fields,
-                q = parameters.Search,
+                search = parameters.Search,
                 sort = parameters.Sort,
                 type = parameters.Type,
                 status = parameters.Status
@@ -311,7 +309,7 @@ public sealed class HabitsController(
                 page = parameters.Page - 1,
                 pageSize = parameters.PageSize,
                 fields = parameters.Fields,
-                q = parameters.Search,
+                search = parameters.Search,
                 sort = parameters.Sort,
                 type = parameters.Type,
                 status = parameters.Status

@@ -4,7 +4,6 @@ using DevHabit.Api.Database;
 using DevHabit.Api.Dtos.Users;
 using DevHabit.Api.Entities;
 using DevHabit.Api.Services;
-using DevHabit.Api.Services.Hateoas;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +19,6 @@ public sealed class UsersController(
     UserContext userContext,
     LinkService linkService) : ControllerBase
 {
-    // TODO: return response object
     [HttpGet("{id}")]
     [Authorize(Roles = Roles.Admin)]
     public async Task<ActionResult<UserDto>> GetUserById([FromRoute] string id)
@@ -46,7 +44,6 @@ public sealed class UsersController(
         return Ok(user);
     }
 
-    // TODO: return response object
     [HttpGet("me")]
     public async Task<ActionResult<UserDto>> GetCurrentUser([FromHeader(Name = "Accept")] string accept)
     {
