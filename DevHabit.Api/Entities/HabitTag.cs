@@ -2,9 +2,9 @@
 
 public sealed class HabitTag
 {
-    public string HabitId { get; set; }
+    public string HabitId { get; set; } = null!;
 
-    public string TagId { get; set; }
+    public string TagId { get; set; } = null!;
 
     public DateTime CreatedAtUtc { get; set; }
 }

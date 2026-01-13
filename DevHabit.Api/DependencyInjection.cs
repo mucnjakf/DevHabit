@@ -5,6 +5,7 @@ using DevHabit.Api.Constants;
 using DevHabit.Api.Database;
 using DevHabit.Api.Dtos.Habits;
 using DevHabit.Api.Entities;
+using DevHabit.Api.Jobs;
 using DevHabit.Api.Middleware;
 using DevHabit.Api.Options;
 using DevHabit.Api.Services;
@@ -23,6 +24,7 @@ using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Quartz;
 
 namespace DevHabit.Api;
 
@@ -223,6 +225,31 @@ public static class DependencyInjection
                         .AllowAnyMethod();
                 });
             });
+
+            return builder;
+        }
+
+        public WebApplicationBuilder AddBackgroundJobs()
+        {
+            builder.Services.AddQuartz(options =>
+            {
+                options.AddJob<GitHubAutomationSchedulerJob>(x =>
+                    x.WithIdentity("github-automation-scheduler"));
+
+                options
+                    .AddTrigger(x => x.ForJob("github-automation-scheduler")
+                        .WithIdentity("github-automation-scheduler-trigger")
+                        .WithSimpleSchedule(y =>
+                        {
+                            GitHubAutomationOptions gitHubAutomationOptions = builder.Configuration
+                                .GetSection(GitHubAutomationOptions.Section)
+                                .Get<GitHubAutomationOptions>()!;
+
+                            y.WithIntervalInMinutes(gitHubAutomationOptions.ScanIntervalInMinutes).RepeatForever();
+                        }));
+            });
+
+            builder.Services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
 
             return builder;
         }

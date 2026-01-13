@@ -2,7 +2,7 @@
 
 public sealed record PaginationDto<T> : ICollectionResponseDto<T>, ILinksResponseDto
 {
-    public List<T> Items { get; init; }
+    public List<T> Items { get; init; } = null!;
 
     public int Page { get; init; }
 
@@ -10,7 +10,7 @@ public sealed record PaginationDto<T> : ICollectionResponseDto<T>, ILinksRespons
 
     public int TotalCount { get; init; }
 
-    public List<LinkDto> Links { get; set; }
+    public List<LinkDto>? Links { get; set; }
 
     public int TotalPages => (int)Math.Ceiling(TotalCount / (double)PageSize);
 

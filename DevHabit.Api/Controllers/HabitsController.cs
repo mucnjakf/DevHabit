@@ -32,7 +32,7 @@ public sealed class HabitsController(
         [FromServices] SortMappingProvider sortMappingProvider,
         [FromServices] DataShapingService dataShapingService)
     {
-        string userId = await userContext.GetUserIdAsync();
+        string userId = (await userContext.GetUserIdAsync())!;
 
         if (!sortMappingProvider.ValidateMappings<HabitDto, Habit>(parameters.Sort))
         {
@@ -103,7 +103,7 @@ public sealed class HabitsController(
         [FromHeader(Name = "Accept")] string? accept,
         [FromServices] DataShapingService dataShapingService)
     {
-        string userId = await userContext.GetUserIdAsync();
+        string userId = (await userContext.GetUserIdAsync())!;
 
         if (!dataShapingService.Validate<HabitWithTagsDto>(fields))
         {
@@ -143,7 +143,7 @@ public sealed class HabitsController(
         [FromQuery] string? fields,
         [FromServices] DataShapingService dataShapingService)
     {
-        string userId = await userContext.GetUserIdAsync();
+        string userId = (await userContext.GetUserIdAsync())!;
 
         if (!dataShapingService.Validate<HabitWithTagsDtoV2>(fields))
         {
@@ -178,20 +178,25 @@ public sealed class HabitsController(
     [HttpPost]
     public async Task<ActionResult<HabitDto>> CreateHabit(
         [FromBody] CreateHabitRequest createHabitRequest,
+        [FromHeader(Name = "accept")] string? accept,
         [FromServices] IValidator<CreateHabitRequest> validator)
     {
         await validator.ValidateAndThrowAsync(createHabitRequest);
 
-        string userId = await userContext.GetUserIdAsync();
+        string userId = (await userContext.GetUserIdAsync())!;
 
-        Habit habit = createHabitRequest.ToEntity(userId!);
+        Habit habit = createHabitRequest.ToEntity(userId);
 
         await dbContext.Habits.AddAsync(habit);
 
         await dbContext.SaveChangesAsync();
 
         HabitDto habitDto = habit.ToDto();
-        habitDto.Links = CreateLinksForHabit(habit.Id, null);
+
+        if (accept is VendorMediaTypeNames.Application.HateoasJson)
+        {
+            habitDto.Links = CreateLinksForHabit(habit.Id, null);
+        }
 
         return CreatedAtAction(nameof(GetHabit), new { id = habitDto.Id }, habitDto);
     }
@@ -204,7 +209,7 @@ public sealed class HabitsController(
     {
         await validator.ValidateAndThrowAsync(updateHabitRequest);
 
-        string userId = await userContext.GetUserIdAsync();
+        string userId = (await userContext.GetUserIdAsync())!;
 
         Habit? habit = await dbContext.Habits.FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
 
@@ -225,7 +230,7 @@ public sealed class HabitsController(
         [FromRoute] string id,
         [FromBody] JsonPatchDocument<HabitDto> patchDocument)
     {
-        string? userId = await userContext.GetUserIdAsync();
+        string userId = (await userContext.GetUserIdAsync())!;
 
         Habit? habit = await dbContext.Habits.FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
 
@@ -255,7 +260,7 @@ public sealed class HabitsController(
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteHabit([FromRoute] string id)
     {
-        string userId = await userContext.GetUserIdAsync();
+        string userId = (await userContext.GetUserIdAsync())!;
 
         Habit? habit = await dbContext.Habits.FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
 

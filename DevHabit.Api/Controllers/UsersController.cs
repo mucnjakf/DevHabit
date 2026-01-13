@@ -23,7 +23,7 @@ public sealed class UsersController(
     [Authorize(Roles = Roles.Admin)]
     public async Task<ActionResult<UserDto>> GetUserById([FromRoute] string id)
     {
-        string userId = await userContext.GetUserIdAsync();
+        string userId = (await userContext.GetUserIdAsync())!;
 
         if (id != userId)
         {
@@ -47,7 +47,7 @@ public sealed class UsersController(
     [HttpGet("me")]
     public async Task<ActionResult<UserDto>> GetCurrentUser([FromHeader(Name = "Accept")] string accept)
     {
-        string userId = await userContext.GetUserIdAsync();
+        string userId = (await userContext.GetUserIdAsync())!;
 
         UserDto? user = await dbContext.Users
             .AsNoTracking()
@@ -75,7 +75,7 @@ public sealed class UsersController(
     [HttpPut("me")]
     public async Task<ActionResult> UpdateCurrentUser([FromBody] UpdateCurrentUserRequest updateCurrentUserRequest)
     {
-        string userId = await userContext.GetUserIdAsync();
+        string userId = (await userContext.GetUserIdAsync())!;
 
         User? user = await dbContext.Users.FirstOrDefaultAsync(x => x.Id == userId);
 

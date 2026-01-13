@@ -25,7 +25,7 @@ public sealed class GitHubController(
     {
         await validator.ValidateAndThrowAsync(storeGitHubPatRequest);
 
-        string userId = await userContext.GetUserIdAsync();
+        string userId = (await userContext.GetUserIdAsync())!;
 
         await gitHubPatService.StoreAsync(userId!, storeGitHubPatRequest);
 
@@ -35,7 +35,7 @@ public sealed class GitHubController(
     [HttpDelete("personal-access-token")]
     public async Task<ActionResult> RevokeAccessToken()
     {
-        string userId = await userContext.GetUserIdAsync();
+        string userId = (await userContext.GetUserIdAsync())!;
 
         await gitHubPatService.RevokeAsync(userId!);
 
@@ -46,7 +46,7 @@ public sealed class GitHubController(
     public async Task<ActionResult<GitHubUserProfileDto>> GetUserProfile(
         [FromHeader(Name = "Accept")] string? accept)
     {
-        string userId = await userContext.GetUserIdAsync();
+        string userId = (await userContext.GetUserIdAsync())!;
 
         string? gitHubPat = await gitHubPatService.GetAsync(userId!);
 

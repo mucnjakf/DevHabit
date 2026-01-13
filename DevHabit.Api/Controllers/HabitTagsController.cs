@@ -27,7 +27,7 @@ public sealed class HabitTagsController(DevHabitDbContext dbContext, UserContext
     {
         await validator.ValidateAndThrowAsync(upsertHabitTagsRequest);
 
-        string userId = await userContext.GetUserIdAsync();
+        string userId = (await userContext.GetUserIdAsync())!;
 
         Habit? habit = await dbContext.Habits
             .Where(x => x.UserId == userId)
@@ -75,7 +75,7 @@ public sealed class HabitTagsController(DevHabitDbContext dbContext, UserContext
     [HttpDelete("{tagId}")]
     public async Task<ActionResult> DeleteHabitTag([FromRoute] string habitId, [FromRoute] string tagId)
     {
-        string userId = await userContext.GetUserIdAsync();
+        string userId = (await userContext.GetUserIdAsync())!;
 
         bool habitExists = await dbContext.Habits
             .AsNoTracking()

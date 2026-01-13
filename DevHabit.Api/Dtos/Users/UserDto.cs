@@ -14,5 +14,5 @@ public sealed record UserDto : ILinksResponseDto
 
     public required DateTime? UpdatedAtUtc { get; init; }
 
-    public List<LinkDto> Links { get; set; }
+    public List<LinkDto>? Links { get; set; }
 }

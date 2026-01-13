@@ -15,6 +15,8 @@ public sealed class DevHabitDbContext(DbContextOptions<DevHabitDbContext> option
 
     public DbSet<GitHubPat> GitHubPats { get; set; }
 
+    public DbSet<Entry> Entries { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema(Schemas.Application);

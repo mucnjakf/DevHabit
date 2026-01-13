@@ -4,17 +4,17 @@ namespace DevHabit.Api.Entities;
 
 public sealed class Habit
 {
-    public string Id { get; set; }
+    public string Id { get; set; } = null!;
 
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
     public string? Description { get; set; }
 
     public HabitType Type { get; set; }
 
-    public Frequency Frequency { get; set; }
+    public Frequency Frequency { get; set; } = null!;
 
-    public Target Target { get; set; }
+    public Target Target { get; set; } = null!;
 
     public HabitStatus Status { get; set; }
 
@@ -32,9 +32,9 @@ public sealed class Habit
 
     public DateTime? UpdatedAtUtc { get; set; }
 
-    public string UserId { get; set; }
+    public string UserId { get; set; } = null!;
 
-    public List<HabitTag> HabitTags { get; set; }
+    public List<HabitTag> HabitTags { get; set; } = null!;
 
-    public List<Tag> Tags { get; set; }
+    public List<Tag> Tags { get; set; } = null!;
 }

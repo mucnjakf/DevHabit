@@ -5,14 +5,14 @@ namespace DevHabit.Api.Dtos.GitHub;
 
 public sealed record GitHubUserProfileDto : ILinksResponseDto
 {
-    public string Login { get; init; }
+    public string Login { get; init; } = null!;
 
-    public string Name { get; init; }
+    public string Name { get; init; } = null!;
 
     [JsonProperty("avatar_url")]
-    public string AvatarUrl { get; init; }
+    public string AvatarUrl { get; init; } = null!;
 
-    public string Bio { get; init; }
+    public string Bio { get; init; } = null!;
 
     [JsonProperty("public_repos")]
     public int PublicRepos { get; init; }
@@ -21,5 +21,5 @@ public sealed record GitHubUserProfileDto : ILinksResponseDto
 
     public int Following { get; init; }
 
-    public List<LinkDto> Links { get; set; }
+    public List<LinkDto>? Links { get; set; }
 }

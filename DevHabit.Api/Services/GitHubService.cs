@@ -28,15 +28,17 @@ public sealed class GitHubService(IHttpClientFactory httpClientFactory, ILogger<
         return JsonConvert.DeserializeObject<GitHubUserProfileDto>(content);
     }
 
-    public async Task<IReadOnlyList<GitHubUserEventDto>?> GetUserEventsAsync(
+    public async Task<IReadOnlyList<GitHubEventDto>?> GetUserEventsAsync(
         string username,
         string gitHubPat,
+        int page,
+        int perPage,
         CancellationToken cancellationToken = default)
     {
         using HttpClient httpClient = CreateGitHubClient(gitHubPat);
 
         HttpResponseMessage httpResponseMessage = await httpClient
-            .GetAsync($"users/{username}/events?per_page=100", cancellationToken);
+            .GetAsync($"users/{username}/events?page={page}&per_page={perPage}", cancellationToken);
 
         if (!httpResponseMessage.IsSuccessStatusCode)
         {
@@ -49,7 +51,7 @@ public sealed class GitHubService(IHttpClientFactory httpClientFactory, ILogger<
 
         string content = await httpResponseMessage.Content.ReadAsStringAsync(cancellationToken);
 
-        return JsonConvert.DeserializeObject<List<GitHubUserEventDto>>(content);
+        return JsonConvert.DeserializeObject<List<GitHubEventDto>>(content);
     }
 
     private HttpClient CreateGitHubClient(string gitHubPat)

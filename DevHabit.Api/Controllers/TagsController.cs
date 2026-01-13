@@ -26,7 +26,7 @@ public sealed class TagsController(
         [FromHeader] string? accept,
         [FromQuery] TagsQueryParameters parameters)
     {
-        string userId = await userContext.GetUserIdAsync();
+        string userId = (await userContext.GetUserIdAsync())!;
 
         IQueryable<TagDto> query = dbContext.Tags
             .AsNoTracking()
@@ -69,7 +69,7 @@ public sealed class TagsController(
     [HttpGet("{id}")]
     public async Task<ActionResult<TagDto>> GetTag([FromRoute] string id, [FromHeader] string? accept)
     {
-        string? userId = await userContext.GetUserIdAsync();
+        string userId = (await userContext.GetUserIdAsync())!;
 
         TagDto? tag = await dbContext.Tags
             .AsNoTracking()
@@ -97,9 +97,9 @@ public sealed class TagsController(
     {
         await validator.ValidateAndThrowAsync(createTagRequest);
 
-        string userId = await userContext.GetUserIdAsync();
+        string userId = (await userContext.GetUserIdAsync())!;
 
-        Tag tag = createTagRequest.ToEntity(userId!);
+        Tag tag = createTagRequest.ToEntity(userId);
 
         if (await dbContext.Tags.AnyAsync(x => x.Name == tag.Name))
         {
@@ -126,7 +126,7 @@ public sealed class TagsController(
     {
         await validator.ValidateAndThrowAsync(updateTagRequest);
 
-        string userId = await userContext.GetUserIdAsync();
+        string userId = (await userContext.GetUserIdAsync())!;
 
         Tag? tag = await dbContext.Tags.FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
 
@@ -145,7 +145,7 @@ public sealed class TagsController(
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteTag([FromRoute] string id)
     {
-        string userId = await userContext.GetUserIdAsync();
+        string userId = (await userContext.GetUserIdAsync())!;
 
         Tag? tag = await dbContext.Tags.FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
 
