@@ -168,7 +168,7 @@ public sealed class EntriesController(DevHabitDbContext dbContext, LinkService l
     public async Task<ActionResult<List<EntryDto>>> CreateEntryBatch(
         [FromBody] CreateEntryBatchRequest createEntryBatchRequest,
         [FromHeader(Name = "accept")] string? accept,
-        IValidator<CreateEntryBatchRequest> validator)
+        [FromServices] IValidator<CreateEntryBatchRequest> validator)
     {
         await validator.ValidateAndThrowAsync(createEntryBatchRequest);
 

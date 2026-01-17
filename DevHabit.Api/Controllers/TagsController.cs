@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DevHabit.Api.Controllers;
 
+[ResponseCache(Duration = 120)]
 [ApiController]
 [Route("tags")]
 [Authorize(Roles = Roles.Member)]
@@ -122,7 +123,8 @@ public sealed class TagsController(
     public async Task<ActionResult> UpdateTag(
         [FromRoute] string id,
         [FromBody] UpdateTagRequest updateTagRequest,
-        [FromServices] IValidator<UpdateTagRequest> validator)
+        [FromServices] IValidator<UpdateTagRequest> validator,
+        [FromServices] InMemoryETagStore inMemoryETagStore)
     {
         await validator.ValidateAndThrowAsync(updateTagRequest);
 
@@ -138,6 +140,8 @@ public sealed class TagsController(
         tag.UpdateFromRequest(updateTagRequest);
 
         await dbContext.SaveChangesAsync();
+
+        inMemoryETagStore.SetETag(Request.Path.Value!, tag.ToDto());
 
         return NoContent();
     }

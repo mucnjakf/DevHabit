@@ -8,7 +8,7 @@ Authorization: Bearer {{accessToken}}
 ### Get tag by ID
 
 < {%
-    request.variables.set("id", "t_019b8656-0745-77f2-a5b2-c3cbbdb38125")
+    request.variables.set("id", "t_019b95a2-9154-75e6-b651-81855c4f8116")
 %}
 GET {{hostAddress}}/tags/{{id}}
 # Accept: application/vnd.dev-habit.hateoas+json
