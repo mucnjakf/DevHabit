@@ -1,0 +1,32 @@
+﻿### Get cursor paginated entries
+
+< {%
+    request.variables.set("search", "")
+    request.variables.set("type", "")
+    request.variables.set("status", "")    
+    request.variables.set("fields", "")    
+    request.variables.set("limit", "1")
+%}
+GET {{hostAddress}}/entries/cursor
+    ?search={{search}}
+    &type={{type}}
+    &status={{status}}
+    &fields={{fields}}
+    &limit={{limit}}
+Accept: application/vnd.dev-habit.hateoas+json
+Authorization: Bearer {{accessToken}}
+# Accept: application/json
+
+### Create entry
+
+POST {{hostAddress}}/entries
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "habitId": "h_019b95a1-dca5-77ab-8397-af00c432ebd6",
+  "value": "3",
+  "notes": "test3",
+  "date": "2026-01-21"
+}
