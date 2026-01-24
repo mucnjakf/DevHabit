@@ -14,7 +14,7 @@ namespace DevHabit.Api.Controllers;
 [Authorize(Roles = Roles.Member)]
 public sealed class GitHubController(
     GitHubPatService gitHubPatService,
-    GitHubService gitHubService,
+    RefitGitHubService gitHubService,
     UserContext userContext,
     LinkService linkService) : ControllerBase
 {
