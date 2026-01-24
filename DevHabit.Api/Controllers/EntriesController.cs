@@ -201,6 +201,7 @@ public sealed class EntriesController(DevHabitDbContext dbContext, LinkService l
     }
 
     [HttpPost]
+    [IdempotentRequest]
     public async Task<ActionResult<EntryDto>> CreateEntry(
         [FromBody] CreateEntryRequest createEntryRequest,
         [FromHeader(Name = "accept")] string? accept,
