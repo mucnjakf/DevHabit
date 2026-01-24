@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Extensions.Http.Resilience;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
 using Npgsql;
@@ -24,6 +25,7 @@ using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Polly;
 using Quartz;
 using Refit;
 
@@ -163,6 +165,10 @@ public static class DependencyInjection
 
             builder.Services.AddTransient<GitHubService>();
             builder.Services.AddTransient<RefitGitHubService>();
+
+            builder.Services
+                .AddHttpClient()
+                .ConfigureHttpClientDefaults(x => x.AddStandardResilienceHandler());
 
             builder.Services
                 .AddHttpClient("github")
