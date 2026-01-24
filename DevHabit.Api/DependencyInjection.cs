@@ -274,6 +274,13 @@ public static class DependencyInjection
 
                             y.WithIntervalInMinutes(gitHubAutomationOptions.ScanIntervalInMinutes).RepeatForever();
                         }));
+
+                options.AddJob<CleanupEntryImportJobsJob>(x => x.WithIdentity("cleanup-entry-imports"));
+
+                options.AddTrigger(x => x
+                    .ForJob("cleanup-entry-imports")
+                    .WithIdentity("cleanup-entry-imports-trigger")
+                    .WithCronSchedule("0 0 3 * * ?", y => y.InTimeZone(TimeZoneInfo.Utc)));
             });
 
             builder.Services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);

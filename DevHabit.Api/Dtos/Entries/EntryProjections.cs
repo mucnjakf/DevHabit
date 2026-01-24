@@ -20,4 +20,20 @@ public static class EntryProjections
             UpdatedAtUtc = x.UpdatedAtUtc,
         };
     }
+
+    public static Expression<Func<EntryImportJob, EntryImportJobDto>> ProjectToEntryImportJobDto()
+    {
+        return x => new EntryImportJobDto
+        {
+            Id = x.Id,
+            UserId = x.UserId,
+            Status = x.Status,
+            FileName = x.FileName,
+            TotalRecords = x.TotalRecords,
+            ProcessedRecords = x.ProcessedRecords,
+            SuccessfulRecords = x.SuccessfulRecords,
+            FailedRecords = x.FailedRecords,
+            CreatedAtUtc = x.CreatedAtUtc,
+        };
+    }
 }

@@ -17,6 +17,8 @@ public sealed class DevHabitDbContext(DbContextOptions<DevHabitDbContext> option
 
     public DbSet<Entry> Entries { get; set; }
 
+    public DbSet<EntryImportJob> EntryImportJobs { get; init; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema(Schemas.Application);

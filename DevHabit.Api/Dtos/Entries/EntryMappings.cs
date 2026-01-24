@@ -57,4 +57,20 @@ public static class EntryMappings
         entry.Notes = request.Notes;
         entry.UpdatedAtUtc = DateTime.UtcNow;
     }
+
+    public static EntryImportJobDto ToDto(this EntryImportJob entryImportJob)
+    {
+        return new EntryImportJobDto
+        {
+            Id = entryImportJob.Id,
+            UserId = entryImportJob.UserId,
+            Status = entryImportJob.Status,
+            FileName = entryImportJob.FileName,
+            TotalRecords = entryImportJob.TotalRecords,
+            ProcessedRecords = entryImportJob.ProcessedRecords,
+            SuccessfulRecords = entryImportJob.SuccessfulRecords,
+            FailedRecords = entryImportJob.FailedRecords,
+            CreatedAtUtc = entryImportJob.CreatedAtUtc,
+        };
+    }
 }
