@@ -74,4 +74,34 @@ public sealed class GitHubController(
 
         return Ok(gitHubUserProfileDto);
     }
+
+    [HttpGet("events")]
+    public async Task<ActionResult<IReadOnlyList<GitHubEventDto>>> GetUserEvents()
+    {
+        string? userId = await userContext.GetUserIdAsync();
+
+        string? token = await gitHubPatService.GetAsync(userId!);
+
+        if (token is null)
+        {
+            return Unauthorized();
+        }
+
+        GitHubUserProfileDto? profile = await gitHubService.GetUserProfileAsync(token);
+
+        if (profile is null)
+        {
+            return NotFound();
+        }
+
+        IReadOnlyList<GitHubEventDto>? events = await gitHubService
+            .GetUserEventsAsync(profile.Login, token);
+
+        if (events is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(events);
+    }
 }
