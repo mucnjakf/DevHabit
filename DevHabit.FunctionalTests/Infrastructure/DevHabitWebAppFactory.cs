@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System.Security.Cryptography;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Logging.Abstractions;
 using Testcontainers.PostgreSql;
 using WireMock.Server;
 
@@ -20,8 +22,10 @@ public sealed class DevHabitWebAppFactory : WebApplicationFactory<Program>, IAsy
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseSetting("ConnectionStrings:Default", _postgresContainer.GetConnectionString());
-
         builder.UseSetting("GitHub:BaseUrl", _wireMockServer.Urls[0]);
+        builder.UseSetting("Encryption:Key", Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)));
+
+        Quartz.Logging.LogContext.SetCurrentLogProvider(NullLoggerFactory.Instance);
     }
 
     public async Task InitializeAsync()
