@@ -28,6 +28,8 @@ public sealed class GitHubTests(DevHabitWebAppFactory factory) : IntegrationTest
     [Fact]
     public async Task GetProfile_ShouldReturnUserProfile_WhenAccessTokenIsValid()
     {
+        await CleanupDatabaseAsync();
+        
         WireMockServer
             .Given(Request.Create()
                 .WithPath("/user")

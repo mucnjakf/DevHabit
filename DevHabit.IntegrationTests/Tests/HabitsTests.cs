@@ -11,6 +11,8 @@ public sealed class HabitsTests(DevHabitWebAppFactory factory) : IntegrationTest
     [Fact]
     public async Task CreateHabit_ShouldSucceed_WithValidParameters()
     {
+        await CleanupDatabaseAsync();
+
         var request = new CreateHabitRequest
         {
             Name = "Read books",

@@ -10,6 +10,8 @@ public sealed class AuthenticationTests(DevHabitWebAppFactory factory) : Integra
     [Fact]
     public async Task Register_ShouldSucceed_WithValidParameters()
     {
+        await CleanupDatabaseAsync();
+
         var request = new RegisterUserRequest
         {
             Email = "register@test.com",
@@ -28,6 +30,8 @@ public sealed class AuthenticationTests(DevHabitWebAppFactory factory) : Integra
     [Fact]
     public async Task Register_ShouldReturnAccessTokens_WithValidParameters()
     {
+        await CleanupDatabaseAsync();
+
         var request = new RegisterUserRequest
         {
             Email = "register1@test.com",

@@ -3,7 +3,9 @@ using System.Net.Http.Json;
 using DevHabit.Api.Database;
 using DevHabit.Api.Dtos.Auth;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 using WireMock.Server;
 
 namespace DevHabit.IntegrationTests.Infrastructure;
@@ -69,5 +71,36 @@ public abstract class IntegrationTestFixture(DevHabitWebAppFactory factory) : IC
         _authorizedClient = client;
 
         return client;
+    }
+
+    public async Task CleanupDatabaseAsync()
+    {
+        using IServiceScope scope = factory.Services.CreateScope();
+        IConfiguration configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+
+        string? connectionString = configuration.GetConnectionString("Default");
+
+        if (connectionString is null)
+        {
+            throw new InvalidOperationException("Database connection string not found in configuration");
+        }
+
+        await using NpgsqlConnection connection = new(connectionString);
+        await connection.OpenAsync();
+
+        await using NpgsqlCommand command = new(@"
+            DO $$
+            BEGIN
+                TRUNCATE TABLE dev_habit.entries CASCADE;
+                TRUNCATE TABLE dev_habit.entry_import_jobs CASCADE;
+                TRUNCATE TABLE dev_habit.tags CASCADE;
+                TRUNCATE TABLE dev_habit.habits CASCADE;
+                TRUNCATE TABLE dev_habit.users CASCADE;
+
+                TRUNCATE TABLE identity.asp_net_users CASCADE;
+                TRUNCATE TABLE identity.refresh_tokens CASCADE;
+            END $$;", connection);
+
+        await command.ExecuteNonQueryAsync();
     }
 }
