@@ -1,7 +1,8 @@
 ﻿using System.Reflection;
 using Asp.Versioning.ApiExplorer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace DevHabit.Api.Options;
@@ -32,6 +33,31 @@ public sealed class ConfigureSwaggerGenOptions(IApiVersionDescriptionProvider ap
 
         options.CustomSchemaIds(type => type.FullName?.Replace("+", "."));
         options.DescribeAllParametersInCamelCase();
+
+        options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            Description =
+                "JWT authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+            Name = "Authorization",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.ApiKey,
+            Scheme = JwtBearerDefaults.AuthenticationScheme
+        });
+
+        options.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Id = "Bearer",
+                        Type = ReferenceType.SecurityScheme,
+                    }
+                },
+                []
+            }
+        });
     }
 
     public void Configure(string? name, SwaggerGenOptions options)
