@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text;
 using System.Threading.RateLimiting;
 using Asp.Versioning;
@@ -20,8 +21,6 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.Extensions.Http.Resilience;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
 using Npgsql;
@@ -29,7 +28,6 @@ using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using Polly;
 using Quartz;
 using Refit;
 using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
@@ -79,7 +77,16 @@ public static class DependencyInjection
                 })
                 .AddMvc();
 
-            builder.Services.AddOpenApi();
+            // builder.Services.AddOpenApi();
+
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.ResolveConflictingActions(descriptions => descriptions.First());
+
+                string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                options.IncludeXmlComments(xmlPath);
+            });
 
             builder.Services.AddResponseCaching();
 
