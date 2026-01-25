@@ -3,5 +3,6 @@
     <File Path="compose.yaml" />
   </Folder>
   <Project Path="DevHabit.Api/DevHabit.Api.csproj" />
+  <Project Path="DevHabit.IntegrationTests/DevHabit.IntegrationTests.csproj" />
   <Project Path="DevHabit.UnitTests/DevHabit.UnitTests.csproj" />
 </Solution>
