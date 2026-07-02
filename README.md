@@ -1,0 +1,22 @@
+- configure github
+- add favicon
+- add readme
+- https://github.com/jaimejaramilloperez/dev-habit/
+- rest api best practices
+- validation with problem details
+- exception handling with problem details
+- search, sort, filter
+- pagination
+- data shaping
+- content negotiation
+- api versioning
+- jwt authentication and authorization using identity
+- integration with external api
+- caching
+- optimistic locking
+- refit
+- http resilliance using polly
+- rate limiting
+- idempotence
+- unit, integration and functional testing
+- open api, swagger and scalar, documenting
