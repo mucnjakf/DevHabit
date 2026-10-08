@@ -4,7 +4,7 @@
 Developer Habit Tracking Web Application - 2025.
 
 <p align="justify">
-    DevHabit is a web application designed to help developers track and log their daily habits, routines, and productivity-related activities. It provides a simple and organized way to record consistent behaviors, monitor progress over time, and build better development habits. With a focus on clarity and usability, DevHabit helps users stay accountable and maintain productive workflows throughout their coding journey.
+    DevHabit is a web application designed to help developers track and log their daily habits, routines, and productivity-related activities. It provides a simple and organized way to record consi[...]
 </p>
 
 #
@@ -25,12 +25,3 @@ Developer Habit Tracking Web Application - 2025.
   - xUnit
 - Database
   - PostgreSQL
-
-#
-
-### **🛠️ Tools**
-- Source Control: GitHub
-- IDE: Rider
-- API Client: Postman
-- RDBMS: DataGrip
-- CLI: Windows Terminal
